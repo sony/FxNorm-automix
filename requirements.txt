@@ -1,0 +1,10 @@
+librosa>=0.8.1
+psutil
+git+https://github.com/csteinmetz1/pymixconsole
+git+https://github.com/csteinmetz1/pyloudnorm
+git+https://github.com/aubio/aubio
+scipy>=1.6.3
+soundfile
+soxbindings
+sty
+torch>=1.9.0
