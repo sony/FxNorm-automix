@@ -5,14 +5,9 @@ import torch.nn as nn
 from multiprocessing import cpu_count
 from collections import OrderedDict
 
-from automix.common_audioeffects import AugmentationChain, Gain, Monauralize, SwapChannels
-from automix.common_audioeffects import ConvolutionalReverb, Equaliser
-from pymixconsole.parameter import Parameter
-from pymixconsole.parameter_list import ParameterList
-
-from automix.common_effectsnormalization import LoudnessNormalize
 from automix.common_datatypes import DataType
-from automix.common_losses import Loss, LinearCombinationLoss, LogFFT, FIRFilterLoss, StereoLoss, StereoLoss2, StereoLoss3
+from automix.common_losses import Loss, StereoLoss, StereoLoss2
+from automix.common_audioeffects import AugmentationChain
 
 config = {}
 
@@ -24,10 +19,10 @@ config['CALCULATE_STATISTICS'] = True
 
 config['OUTPUTS'] = ['mixture']
 
-config['INPUTS'] = ['vocals_rv1_eq_comp_noexp_pan_frames_vol',
-                    'bass_eq_comp_noexp_pan_frames_vol',
-                    'drums_eq_comp_noexp_pan_frames_vol', 
-                    'other_rv1_eq_comp_noexp_pan_frames_vol']
+config['INPUTS'] = ['vocals',
+                    'bass',
+                    'drums', 
+                    'other']
 
 # list of all sources (used for creating mixture)
 config['SOURCES'] = config['INPUTS'] + config['OUTPUTS']
@@ -77,51 +72,7 @@ config['OVERLAP_PROBABILITY'] = {}
 # Initialize data augmentation chain
 # Please see `common_audioeffects.py` for all available effects that can be used.
 # In case you do not want to use any augmentation, just use `AugmentationChain()`.
-# config['AUGMENTER_CHAIN'] = AugmentationChain([(LoudnessNormalize(sample_rate=int(np.mean(config['ACCEPTED_SAMPLING_RATES'])),
-#                                                                   lufs_target=-15.0), 1., False)],
-#                                               shuffle=False)
-# config['AUGMENTER_CHAIN'] = AugmentationChain()
-# config['AUGMENTER_CHAIN'] = AugmentationChain([(Gain(), 0., False),
-#                                                (SwapChannels(n_channels=config['N_CHANNELS']), 0., False),
-#                                                (Monauralize(n_channels=config['N_CHANNELS']), 0, False)], shuffle=True)
 
-# impulse_responses = []
-# impulse_responses.extend(create_dataset(path='/data/martinez/audio/automix/ImpulseResponses/Data_ImpulseResponses/IRCAMVerbV3/44100_processed_3000s',
-#                                         accepted_sampling_rates=config['ACCEPTED_SAMPLING_RATES'],
-#                                         sources=['impulse_response'],
-#                                         mapped_sources={}, load_to_memory=True, debug=False)[0])
-
-# eq_parameters = ParameterList()
-# eq_gain = -30.0
-# eq_parameters.add(Parameter('low_shelf_gain', eq_gain, 'float', minimum=eq_gain, maximum=eq_gain))
-# eq_parameters.add(Parameter('low_shelf_freq', 600.0, 'float', minimum=500.0, maximum=700.0))
-# eq_parameters.add(Parameter('high_shelf_gain', eq_gain, 'float', minimum=eq_gain, maximum=eq_gain))
-# eq_parameters.add(Parameter('high_shelf_freq', 8500.0, 'float', minimum=7000.0, maximum=10000.0))
-
-# eq = Equaliser(n_channels=config['N_CHANNELS'],
-#                sample_rate=int(np.mean(config['ACCEPTED_SAMPLING_RATES'])),
-#                gain_range=(eq_gain, eq_gain),
-#                bands=['low_shelf', 'high_shelf'],
-#                hard_clip=False,
-#                name='Equaliser',
-#                parameters=eq_parameters)
-
-# rv_parameters = ParameterList()
-# rv_parameters.add(Parameter('index', 0, 'int', minimum=0, maximum=len(impulse_responses)))
-# rv_parameters.add(Parameter('wet', 1.0, 'float', minimum=1.0, maximum=1.0))
-# rv_parameters.add(Parameter('dry', 0.0, 'float', minimum=0.0, maximum=0.0))
-# rv_parameters.add(Parameter('decay', 1.0, 'float', minimum=0.1, maximum=1.0))
-# rv_parameters.add(Parameter('pre_delay', 0, 'int', units='ms', minimum=-25, maximum=25))
-
-# reverb = ConvolutionalReverb(impulse_responses=impulse_responses,
-#                              sample_rate=int(np.mean(config['ACCEPTED_SAMPLING_RATES'])), 
-#                              parameters=rv_parameters)
-
-# config['AUGMENTER_CHAIN'] = AugmentationChain([
-#                              (eq, 1.0, False),
-#                             (reverb, 1.0, False)
-#                              ],
-#                             shuffle=False, parallel=False)
 
 config['AUGMENTER_CHAIN'] = AugmentationChain()
 # In order to avoid any boundary effects, it is possible to input longer sequences into
@@ -137,7 +88,6 @@ config['SHUFFLE_CHANNELS'] = True
 
 # Import network definition file
 from automix.common_networkbuilding_cafx_tdcn_lstm_mix import Net, compute_receptive_field  # noqa E402, F401
-# from automix.common_networkbuilding_tdcnx2_sigmoid import Net, compute_receptive_field  # noqa E402, F401
 
 # THIS PARAMETER MAY BE USELESS HERE, BUT REQUIRED IN train.py FOR NOW
 config['NET_TYPE'] = 'CAFX_TDCN_MIX'
@@ -298,16 +248,8 @@ config['MAX_VALIDATION_SEQ_LENGTH_TD'] = 4 * 60 * np.max(config['ACCEPTED_SAMPLI
 # Specify folders where the training data is stored
 config['DATA_DIR_TRAIN'] = []
 config['DATA_DIR_TRAIN'].append(('/data/martinez/audio/automix/MUSDB18/train', False))
-# config['DATA_DIR_TRAIN'].append(('/data/martinez/audio/automix/TencyDB/train/part1', False))
-# config['DATA_DIR_TRAIN'].append(('/data/martinez/audio/automix/TencyDB/train/part2', False))
-# config['DATA_DIR_TRAIN'].append(('/data/martinez/audio/automix/TencyDB/train/part3', False))
-# config['DATA_DIR_TRAIN'].append(('/data/martinez/audio/automix/TencyDB/train/part4', False))
-# config['DATA_DIR_TRAIN'].append(('/data/martinez/audio/automix/TencyDB/train/part5', False))
-# config['DATA_DIR_TRAIN'].append(('/data/martinez/audio/automix/TencyDB/train/part6', False))
-# config['DATA_DIR_TRAIN'].append(('/data/martinez/audio/automix/TencyDB/val/part5_validation', False))
 
 # Specify folders where the validation data is stored
 config['DATA_DIR_VALID'] = []
 config['DATA_DIR_VALID'].append(('/data/martinez/audio/automix/MUSDB18/val', False))
-# config['DATA_DIR_VALID'].append(('/data/martinez/audio/automix/MUSDB18/val_loudness_normalized_48k', False))
 

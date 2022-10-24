@@ -5,10 +5,9 @@ import torch.nn as nn
 from multiprocessing import cpu_count
 from collections import OrderedDict
 
-from automix.common_audioeffects import AugmentationChain, Gain, Monauralize, SwapChannels
-from automix.common_effectsnormalization import LoudnessNormalize
 from automix.common_datatypes import DataType
-from automix.common_losses import Loss, LinearCombinationLoss, LogFFT, FIRFilterLoss
+from automix.common_losses import Loss, StereoLoss, StereoLoss
+from automix.common_audioeffects import AugmentationChain
 
 config = {}
 
@@ -16,12 +15,9 @@ config = {}
 
 # Are we in debug mode?
 config['DEBUG'] = False
+config['CALCULATE_STATISTICS'] = True
 
-config['OUTPUTS'] = ['vocals',
-                    'bass',
-                    'drums', 
-                    'other']
-
+config['OUTPUTS'] = ['mixture']
 
 config['INPUTS'] = ['vocals',
                     'bass',
@@ -76,32 +72,27 @@ config['OVERLAP_PROBABILITY'] = {}
 # Initialize data augmentation chain
 # Please see `common_audioeffects.py` for all available effects that can be used.
 # In case you do not want to use any augmentation, just use `AugmentationChain()`.
-# config['AUGMENTER_CHAIN'] = AugmentationChain([(LoudnessNormalize(sample_rate=int(np.mean(config['ACCEPTED_SAMPLING_RATES'])),
-#                                                                   lufs_target=-15.0), 1., False)],
-#                                               shuffle=False)
+                                       
 config['AUGMENTER_CHAIN'] = AugmentationChain()
-# config['AUGMENTER_CHAIN'] = AugmentationChain([(Gain(), 1., False),
-#                                                (SwapChannels(n_channels=config['N_CHANNELS']), 1., False),
-#                                                (Monauralize(n_channels=config['N_CHANNELS']), 0.5, False)], shuffle=True)
-
-
 # In order to avoid any boundary effects, it is possible to input longer sequences into
 # the augmenter and use a center-crop at its output, which should not be distorted by any boundary effects.
 # Tuple contains the number of time samples that are added to the left/right.
+config['AUGMENTER_SOURCES'] = []
+
 config['AUGMENTER_PADDING'] = (0, 0)
 config['SHUFFLE_STEMS'] = False
-config['SHUFFLE_CHANNELS'] = False
+config['SHUFFLE_CHANNELS'] = True
 
 """ SETTINGS RELATED TO NETWORK """
 
 # Import network definition file
-from automix.common_networkbuilding_cafx_tdcn_2 import Net, compute_receptive_field  # noqa E402, F401
-# from automix.common_networkbuilding_tdcnx2_sigmoid import Net, compute_receptive_field  # noqa E402, F401
+from automix.common_networkbuilding_cafx_tdcn_lstm_mix import Net, compute_receptive_field  # noqa E402, F401
 
 # THIS PARAMETER MAY BE USELESS HERE, BUT REQUIRED IN train.py FOR NOW
 config['NET_TYPE'] = 'CAFX_TDCN'
 
 config['PRETRAIN'] = True
+config['PRETRAIN_FRONT_END'] = False
 # Initialization heuristic for network weights/biases
 # (either `None` for PyTorch default or one of the initialization heuristics of `Net`)
 config['INIT_NETWORK'] = None
@@ -133,6 +124,9 @@ config['N_TB_PER_REPEAT'] = 6
 
 # Number of repeat (R)
 config['N_REPEATS'] = 4
+
+# SE amp ratio
+config['SE_AMP_RATIO'] = 16
 
 # Set how many samples we should discard in model output datatype
 # to avoid boundary effects - e.g., due to receptive field of network
@@ -198,6 +192,13 @@ config['GRAD_CLIP_MAX_NORM'] = 0.2  # e.g., `0.1` or `None` (for adaptive clippi
 # Number of data providers that fill the queues
 config['NUM_DATAPROVIDING_PROCESSES'] = cpu_count() // 2
 
+# Number of minibatches that we use to estimate the input scale and offset as well as the warm-up for ADAM
+config['NUM_MINIBATCHES_FOR_STATISTICS_ESTIMATION'] = 1000
+
+# Number of minibatches that define one epoch, i.e., after which we compute the validation loss/store model snapshots
+config['NUM_MINIBATCHES_PER_EPOCH'] = 1600
+
+
 # Use AMSGrad optimizer
 config['AMSGRAD'] = True
 
@@ -217,87 +218,18 @@ config['BATCHED_VALID'] = True
 
 f_guard = int(np.ceil(((config['GUARD_LEFT'] - (config['FFT_SIZE'] - 1) - 1) / config['HOP_LENGTH']) + 1) + 1)
 
-# loss_1 = FIRFilterLoss(Loss(nn.L1Loss(), DataType.TIME_SAMPLES,
-#                             guard_left=config['GUARD_LEFT'],
-#                             guard_right=config['GUARD_RIGHT']), filter_type=["aw", "lp"])
 
 loss_1 = Loss(nn.L1Loss(), DataType.TIME_SAMPLES,
                             guard_left=config['GUARD_LEFT'],
                             guard_right=config['GUARD_RIGHT'])
 
-# loss_1 = FIRFilterLoss(Loss(nn.MSELoss(), DataType.TIME_SAMPLES,
-#                             guard_left=config['GUARD_LEFT'],
-#                             guard_right=config['GUARD_RIGHT']), filter_type=["aw", "lp"])
-
-# loss_2 = FIRFilterLoss(LogFFT(Loss(nn.L1Loss(), DataType.STFT_MAGNITUDE,
-#                                    guard_left=f_guard,
-#                                    guard_right=f_guard)),
-#                        filter_type=["aw", "lp"],
-#                        fft_size=config['FFT_SIZE'],
-#                        hop_length=config['HOP_LENGTH'],
-#                        stft_window=config['STFT_WINDOW'])
-
-# loss_2 = FIRFilterLoss(LogFFT(Loss(nn.MSELoss(), DataType.STFT_MAGNITUDE,
-#                                    guard_left=f_guard,
-#                                    guard_right=f_guard)),
-#                        filter_type=["aw", "lp"],
-#                        fft_size=config['FFT_SIZE'],
-#                        hop_length=config['HOP_LENGTH'],
-#                        stft_window=config['STFT_WINDOW'])
-
-# loss_2 = LogFFT(Loss(nn.MSELoss(), DataType.STFT_MAGNITUDE,
-#                      guard_left=f_guard, guard_right=f_guard))
-
-loss_2 = Loss(nn.MSELoss(), DataType.STFT_MAGNITUDE,
-                     guard_left=f_guard, guard_right=f_guard)
-
-loss_training = LinearCombinationLoss(losses=[loss_1, loss_2],
-                                      weights=[1.0, 0.01])
-
-# loss_training = LinearCombinationLoss(losses=[loss_1, loss_2],
-#                                       weights=[1.0, 0.000001])
-
-# loss_training = LinearCombinationLoss(losses=[loss_1, loss_2],
-#                                       weights=[10., 0.0001])
-
-# loss_training = LinearCombinationLoss(losses=[loss_1, loss_2],
-#                                       weights=[10., 0.000001])
 
 config['TRAIN_LOSSES'] = [loss_1]
 
 # Loss function(s) for validation (`OrderedDict`)
 config['VALID_LOSSES'] = OrderedDict()
-config['VALID_LOSSES']['l1'] = Loss(nn.L1Loss(), DataType.STFT_MAGNITUDE)
-config['VALID_LOSSES']['l2'] = Loss(nn.MSELoss(), DataType.STFT_MAGNITUDE)
 config['VALID_LOSSES']['td_l1'] = Loss(nn.L1Loss(), DataType.TIME_SAMPLES)
-config['VALID_LOSSES']['td_l2'] = Loss(nn.MSELoss(), DataType.TIME_SAMPLES)
 
-config['VALID_LOSSES']['fir_l1'] = FIRFilterLoss(Loss(nn.L1Loss(), DataType.TIME_SAMPLES), filter_type=["aw", "lp"])
-config['VALID_LOSSES']['log_l2'] = LogFFT(Loss(nn.MSELoss(), DataType.STFT_MAGNITUDE))
-
-
-
-# loss_1 = FIRFilterLoss(Loss(nn.L1Loss(), DataType.TIME_SAMPLES,
-#                            ), filter_type=["aw", "lp"])
-
-# loss_2 = FIRFilterLoss(Loss(nn.L1Loss(), DataType.STFT_MAGNITUDE,
-#                            ),
-#                        filter_type=["aw", "lp"],
-#                        fft_size=config['FFT_SIZE'],
-#                        hop_length=config['HOP_LENGTH'],
-#                        stft_window=config['STFT_WINDOW'])
-
-# loss_3 = FIRFilterLoss(Loss(nn.MSELoss(), DataType.STFT_MAGNITUDE,
-#                            ),
-#                        filter_type=["aw", "lp"],
-#                        fft_size=config['FFT_SIZE'],
-#                        hop_length=config['HOP_LENGTH'],
-#                        stft_window=config['STFT_WINDOW'])
-
-# config['VALID_LOSSES']['fir_td_l1'] = FIRFilterLoss(Loss(nn.L1Loss(), DataType.TIME_SAMPLES),
-#                                                     filter_type=["aw", "lp"])
-# config['VALID_LOSSES']['fir_l1'] = loss_2
-# config['VALID_LOSSES']['fir_l2'] = loss_3
 
 # Maximum sequence length that is used during validation -- currently choosen to be 5 minutes
 # (we only use these many samples from the start of the WAV file)
@@ -306,10 +238,8 @@ config['MAX_VALIDATION_SEQ_LENGTH_TD'] = 4 * 60 * np.max(config['ACCEPTED_SAMPLI
 
 # Specify folders where the training data is stored
 config['DATA_DIR_TRAIN'] = []
-config['DATA_DIR_TRAIN'].append(('/data/martinez/audio/automix/MUSDB18/train_eq_matched_avg3', False))
-# config['DATA_DIR_TRAIN'].append(('/data/martinez/audio/automix/MUSDB18/train_loudness_normalized_48k', False))
+config['DATA_DIR_TRAIN'].append(('/data/martinez/audio/automix/MUSDB18/train', False))
 
 # Specify folders where the validation data is stored
 config['DATA_DIR_VALID'] = []
-config['DATA_DIR_VALID'].append(('/data/martinez/audio/automix/MUSDB18/val_eq_matched_avg3', False))
-# config['DATA_DIR_VALID'].append(('/data/martinez/audio/automix/MUSDB18/val_loudness_normalized_48k', False))
+config['DATA_DIR_VALID'].append(('/data/martinez/audio/automix/MUSDB18/val', False))

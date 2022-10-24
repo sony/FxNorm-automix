@@ -15,6 +15,25 @@ from automix.common_miscellaneous import uprint
 
 
 
+class SeparationNet(nn.Module):
+    """
+    Define a separation network which maps a mixture into a target source.
+
+    `input_type`/`output_type` define the input/output data representation of the network.
+    """
+
+    input_type: DataType
+    output_type: DataType
+    __constants__ = ['input_type', 'output_type']  # such that torch.jit.script can pick them up
+
+    def initialize_network(self, heuristic):
+        """
+        Initialize network with the scheme `heuristic`.
+
+        Args:
+            heuristic: heuristic for initialization
+        """
+        pass
 
 
 class SuperNet(nn.Module):

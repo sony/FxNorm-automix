@@ -1,5 +1,4 @@
 import os
-
 import sys
 import time
 import numpy as np
@@ -12,9 +11,8 @@ sys.setrecursionlimit(int(1e6))
 
 import sklearn
 
-from automix.common_dataprocessing import create_dataset, load_wav, save_wav
-from automix.common_miscellaneous import uprint, get_process_memory, compute_stft, compute_istft
-from automix.common_dataprocessing import create_dataset_mixing, create_minibatch_mixing
+from automix.common_dataprocessing import load_wav, save_wav
+from automix.common_miscellaneous import compute_stft, compute_istft
 from automix import utils
 
 from multiprocessing import Pool, cpu_count
@@ -68,6 +66,26 @@ def running_mean_std(x, N):
 
     return mean, std
 
+def lufs_normalize(x, sr, lufs, log=True):
+
+    # measure the loudness first 
+    meter = pyln.Meter(sr) # create BS.1770 meter
+    loudness = meter.integrated_loudness(x+1e-10)
+    if log:
+        print("original loudness: ", loudness," max value: ", np.max(np.abs(x)))
+
+    loudness_normalized_audio = pyln.normalize.loudness(x, loudness, lufs)
+    
+    maxabs_amp = np.maximum(1.0, 1e-6 + np.max(np.abs(loudness_normalized_audio)))
+    loudness_normalized_audio /= maxabs_amp
+    
+    loudness = meter.integrated_loudness(loudness_normalized_audio)
+    if log:
+        print("new loudness: ", loudness," max value: ", np.max(np.abs(loudness_normalized_audio)))
+
+    
+    return loudness_normalized_audio
+
 def get_eq_matching(audio_t, ref_spec, sr=44100, n_fft=65536, hop_length=16384,
                     min_db=-50, ntaps=101, lufs=-30):
     
@@ -75,7 +93,7 @@ def get_eq_matching(audio_t, ref_spec, sr=44100, n_fft=65536, hop_length=16384,
     max_db = amp_to_db(np.max(np.abs(audio_t)))
     if max_db > min_db:
 
-        audio_t = utils.lufs_normalize(audio_t, sr, lufs, log=False)
+        audio_t = lufs_normalize(audio_t, sr, lufs, log=False)
         audio_D = compute_stft(np.expand_dims(audio_t, 1),
                          hop_length,
                          n_fft,

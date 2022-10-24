@@ -100,6 +100,104 @@ def load_files_lists(path):
 
     return list_of_directories
 
+def create_dataset(path, accepted_sampling_rates, sources, mapped_sources, n_channels=-1, load_to_memory=False,
+                   debug=False):
+    """
+    Prepare data in `path` for training/validation/test set generation.
+
+    Args:
+        path: path to the dataset
+        accepted_sampling_rates: list of accepted sampling rates
+        sources: list of sources
+        mapped_sources: list of mapped sources
+        n_channels: number of channels
+        load_to_memory: whether to load to main memory
+        debug: if `True`, then we load only `NUM_SAMPLES_SMALL_DATASET`
+
+    Raises:
+        ValueError: mapping of sources not possible is data is not loaded into memory
+
+    Returns:
+        data: list of dictionaries with function handles (to load the data)
+        directories: list of directories
+    """
+    NUM_SAMPLES_SMALL_DATASET = 16
+
+    # source mapping currently only works if we load everything into the memory
+    if mapped_sources and not load_to_memory:
+        raise ValueError('Mapping of sources only supported if data is loaded into the memory.')
+
+    # get directories for dataset
+    directories = load_files_lists(path)
+
+    # load all songs for dataset
+    uprint(f'\nCreating dataset for path={path} ...')
+
+    if debug:
+        data = [dict() for _x in range(np.minimum(NUM_SAMPLES_SMALL_DATASET, len(directories)))]
+    else:
+        data = [dict() for _x in range(len(directories))]
+
+    material_length = {}  # in seconds
+    for i, d in enumerate(directories):
+        uprint(f'Processing mixture ({i+1} of {len(directories)}): {d}')
+
+        # add names of all files in this folder
+        files = os.listdir(os.path.join(path, d))
+        for f in files:
+            src_name = os.path.splitext(f)[0]
+            if ((src_name not in sources
+                 and src_name not in mapped_sources)):
+                uprint(f'\tIgnoring unknown source from file {f}')
+            else:
+                if src_name not in sources:
+                    src_name = mapped_sources[src_name]
+                uprint(f'\tAdding function handle for "{src_name}" from file {f}')
+
+                _data = load_wav(os.path.join(path, d, f), mmap=not load_to_memory)
+
+                # determine properties from loaded data
+                _samplingrate = _data[0]
+                _n_channels = _data[1].shape[1]
+                _duration = _data[1].shape[0] / _samplingrate
+
+                # collect statistics about data for each source
+                if src_name in material_length:
+                    material_length[src_name] += _duration
+                else:
+                    material_length[src_name] = _duration
+
+                # make sure that sample rate and number of channels matches
+                if n_channels != -1 and _n_channels != n_channels:
+                    raise ValueError(f'File has {_n_channels} '
+                                     f'channels but expected {n_channels}.')
+
+                if _samplingrate not in accepted_sampling_rates:
+                    raise ValueError(f'File has fs = {_samplingrate}Hz '
+                                     f'but expected {accepted_sampling_rates}Hz.')
+
+                # if we already loaded data for this source then append data
+                if src_name in data[i]:
+                    _data = (_data[0], np.vstack((_data[1],
+                                                  data[i][src_name].keywords['file_path_or_data'][1])))
+                data[i][src_name] = functools.partial(generate_data,
+                                                      file_path_or_data=_data)
+
+        if debug and i == NUM_SAMPLES_SMALL_DATASET-1:
+            # load only first `NUM_SAMPLES_SMALL_DATASET` songs
+            break
+
+    # delete all entries where we did not find an source file
+    idx_empty = [_ for _ in range(len(data)) if len(data[_]) == 0]
+    for idx in sorted(idx_empty, reverse=True):
+        del data[idx]
+
+    uprint(f'Finished preparation of dataset. '
+           f'Found in total the following material (in {len(data)} directories):')
+    for src in material_length:
+        uprint(f'\t{src}: {material_length[src] / 60.0 / 60.0:.2f} hours')
+    return data, directories
+
 
 def create_dataset_mixing(path, accepted_sampling_rates, sources, mapped_sources, n_channels=-1, load_to_memory=False,
                    debug=False, pad_wrap_samples=None):

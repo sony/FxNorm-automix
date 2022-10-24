@@ -12,22 +12,19 @@ sys.setrecursionlimit(int(1e6))
 
 import sklearn
 
-from automix.common_dataprocessing import create_dataset, load_wav, save_wav
-from automix.common_miscellaneous import uprint, get_process_memory, compute_stft, compute_istft
-from automix.common_dataprocessing import create_dataset_mixing, create_minibatch_mixing
-from automix.common_losses import StereoLoss, StereoLoss2, StereoLoss3
+from automix.common_dataprocessing import load_wav, save_wav, create_dataset
+from automix.common_miscellaneous import compute_stft, compute_istft
 from automix import utils
 
 from multiprocessing import Pool, cpu_count
 from multiprocessing.pool import ThreadPool, Pool
-from automix.common_audioeffects import Panner, Compressor
 from collections import OrderedDict
 
 import soundfile as sf
 
 import time
 
-from automix.utils_data_normalization import get_comp_matching, get_eq_matching, get_mean_peak
+from automix.utils_data_normalization import get_comp_matching, get_eq_matching, get_mean_peak, lufs_normalize
 from automix.utils_data_normalization import get_reverb_send, get_panning_matching, get_SPS, amp_to_db
 
 from pymixconsole.parameter import Parameter
@@ -55,9 +52,7 @@ HOP_LENGTH = FFT_SIZE//4
 
 # Specific Audio Effect Settings
 
-# Loudness
-NORM_LOUDNESS = True
-
+# EQ
 NORM_EQ = True
 NTAPS = 1001
 LUFS = -30
@@ -81,10 +76,10 @@ NORM_COMP = True
 COMP_USE_EXPANDER = False
 COMP_PEAK_NORM = -10.0
 COMP_TRUE_PEAK = False
-COMP_PERCENTILE = 75 # features_mean (v1) was done with 25
+COMP_PERCENTILE = 75 
 COMP_MIN_TH = -40
 COMP_MAX_RATIO = 20
-comp_settings = {key:{} for key in STEMS}
+comp_settings = {key:{} for key in ['vocals', 'drums', 'bass', 'other']}
 for key in comp_settings:
     if key == 'vocals':
         comp_settings[key]['attack'] = 7.5
@@ -122,51 +117,24 @@ EQ_PARAMETERS.add(Parameter('first_band_q', 0.7, 'float', minimum=0.7, maximum=0
 EQ_BANDS_VOCALS_OTHER = ['low_shelf', 'high_shelf']
 EQ_BANDS_DRUMS = ['low_shelf', 'first_band', 'high_shelf']
 
-
-
-# PRE-REVERB (FOR INFERENCE)
-PRE_IR = []
-PRE_IR.extend(create_dataset(path='/data/martinez/audio/automix/ImpulseResponses/Data_ImpulseResponses/IRCAMVerbV3/44100_processed_1000-1500s',
-                                        accepted_sampling_rates=[SR],
-                                        sources=['impulse_response'],
-                                        mapped_sources={}, load_to_memory=True, debug=False)[0])
-
+# PRE-REVERB (FOR REAL DRY INPUT)
 PRE_REVERB_PARAMETERS = ParameterList()
-PRE_REVERB_PARAMETERS.add(Parameter('index', 0, 'int', minimum=0, maximum=len(PRE_IR)))
 PRE_REVERB_PARAMETERS.add(Parameter('wet', 0.5, 'float', minimum=0.5, maximum=0.5))
 PRE_REVERB_PARAMETERS.add(Parameter('dry', 0.5, 'float', minimum=0.5, maximum=0.5))
 PRE_REVERB_PARAMETERS.add(Parameter('decay', 1.0, 'float', minimum=1.0, maximum=1.0))
 PRE_REVERB_PARAMETERS.add(Parameter('pre_delay', 0, 'int', units='ms', minimum=0, maximum=0))
-
+# ABBEY ROAD TRICK SETTINGS
 PRE_EQ_PROBABILITY = 0
 PRE_REVERB_PROBABILITY = 1.0
 PRE_FX_PARALLEL = False
 PRE_FX_SHUFFLE = False
 
 # RV1 Conv Reverb
-IR = []
-IR.extend(create_dataset(path='/data/martinez/audio/automix/ImpulseResponses/Data_ImpulseResponses/IRCAMVerbV3/44100_processed_3000-4000s',
-                                        accepted_sampling_rates=[SR],
-                                        sources=['impulse_response'],
-                                        mapped_sources={}, load_to_memory=True, debug=False)[0])
-
 REVERB_PARAMETERS = ParameterList()
-REVERB_PARAMETERS.add(Parameter('index', 0, 'int', minimum=0, maximum=len(IR)))
 REVERB_PARAMETERS.add(Parameter('wet', 1.0, 'float', minimum=1.0, maximum=1.0))
 REVERB_PARAMETERS.add(Parameter('dry', 0.0, 'float', minimum=0.0, maximum=0.0))
 REVERB_PARAMETERS.add(Parameter('decay', 1.0, 'float', minimum=1.0, maximum=1.0))
 REVERB_PARAMETERS.add(Parameter('pre_delay', 0, 'int', units='ms', minimum=0, maximum=0))
-
-# RV2 Algroithmic Reverb
-# IR = None
-# REVERB_PARAMETERS = ParameterList()
-# REVERB_PARAMETERS.add(Parameter("bypass",    False, "bool", p=0.0))
-# REVERB_PARAMETERS.add(Parameter("room_size",   0.6, "float", minimum=0.5, maximum=0.6))
-# REVERB_PARAMETERS.add(Parameter("damping",     0.1, "float", minimum=0.1,  maximum=0.1))
-# REVERB_PARAMETERS.add(Parameter("dry_mix",     0.0, "float", minimum=0.0,  maximum=0.0))
-# REVERB_PARAMETERS.add(Parameter("wet_mix",     1.0, "float", minimum=1.0,  maximum=1.0))
-# REVERB_PARAMETERS.add(Parameter("width",       0.7, "float", minimum=0.1,  maximum=1.0))
-
 # ABBEY ROAD TRICK SETTINGS
 EQ_PROBABILITY = 1.0
 REVERB_PROBABILITY = 1.0
@@ -247,7 +215,7 @@ def get_norm_feature(args_):
             
             elif effect == 'eq':
                 
-                audio = utils.lufs_normalize(audio, SR, LUFS, log=False) 
+                audio = lufs_normalize(audio, SR, LUFS, log=False) 
                 audio_spec = compute_stft(audio,
                                  HOP_LENGTH,
                                  FFT_SIZE,
@@ -292,7 +260,7 @@ def get_norm_feature(args_):
 
 # print('Reverb, Panning, EQ, DRC and loudness normalization... ')
 
-def normalize_audio(args_):
+def normalize_audio_path(args_):
     
 # for i, path in enumerate(audio_path_):
 
@@ -397,7 +365,7 @@ def normalize_audio(args_):
 
 
                 elif effect == 'loudness':
-                    output_audio = utils.lufs_normalize(output_audio, SR, features_mean[effect][src]) 
+                    output_audio = lufs_normalize(output_audio, SR, features_mean[effect][src]) 
                     
                 elif effect == 'reverb':
                     
@@ -541,7 +509,7 @@ for effect in EFFECTS:
                 
         if NORM_AUDIO:        
             pool = Pool(CPU_COUNT)
-            pool.map(normalize_audio, _func_args)
+            pool.map(normalize_audio_path, _func_args)
         
     stems_names = stems_names_
     audio_path_, audio_path_dict = get_audio_paths(PATH_DATASET, stems_names)

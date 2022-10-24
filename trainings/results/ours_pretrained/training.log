@@ -1,0 +1,3083 @@
+Starting training:
+	        Results folder: /home/martinez/automix/trainings/results/20210830-h17m08s25_PT1.9.0_TEST_TDCNFx_2
+	    Configuration file: /home/martinez/automix/configs/AUTOEQ/TEST_TDCNFx.py
+	Experiment description: TEST_TDCNFx_2
+
+
+Global variables:
+{   'AugmentationChain': <class 'automix.common_audioeffects.AugmentationChain'>,
+    'DataType': <enum 'DataType'>,
+    'FIRFilterLoss': <class 'automix.common_losses.FIRFilterLoss'>,
+    'Gain': <class 'automix.common_audioeffects.Gain'>,
+    'LinearCombinationLoss': <class 'automix.common_losses.LinearCombinationLoss'>,
+    'LogFFT': <class 'automix.common_losses.LogFFT'>,
+    'Loss': <class 'automix.common_losses.Loss'>,
+    'LoudnessNormalize': <class 'automix.common_effectsnormalization.LoudnessNormalize'>,
+    'Monauralize': <class 'automix.common_audioeffects.Monauralize'>,
+    'Net': <class 'automix.common_networkbuilding_cafx_tdcn_2.Net'>,
+    'OrderedDict': <class 'collections.OrderedDict'>,
+    'Pool': <bound method BaseContext.Pool of <multiprocessing.context.DefaultContext object at 0x7fa60da13b10>>,
+    'Process': <class 'multiprocessing.context.Process'>,
+    'RF': 505,
+    'RawArray': <bound method BaseContext.RawArray of <multiprocessing.context.DefaultContext object at 0x7fa60da13b10>>,
+    'SimpleQueue': <bound method BaseContext.SimpleQueue of <multiprocessing.context.DefaultContext object at 0x7fa60da13b10>>,
+    'SummaryWriter': <class 'torch.utils.tensorboard.writer.SummaryWriter'>,
+    'SuperNet': <class 'automix.common_supernet.SuperNet'>,
+    'SwapChannels': <class 'automix.common_audioeffects.SwapChannels'>,
+    'ThreadPool': <class 'multiprocessing.pool.ThreadPool'>,
+    '__annotations__': {},
+    '__builtins__': <module 'builtins' (built-in)>,
+    '__cached__': None,
+    '__doc__': 'Config file.',
+    '__file__': 'train.py',
+    '__loader__': <_frozen_importlib_external.SourceFileLoader object at 0x7fa6237fa6d0>,
+    '__name__': '__main__',
+    '__package__': None,
+    '__spec__': None,
+    '__warningregistry__': {'version': 117},
+    'amp': <module 'torch.cuda.amp' from '/home/martinez/anaconda3/envs/conda3/lib/python3.7/site-packages/torch/cuda/amp/__init__.py'>,
+    'argparse': <module 'argparse' from '/home/martinez/anaconda3/envs/conda3/lib/python3.7/argparse.py'>,
+    'args': Namespace(config_file='/home/martinez/automix/configs/AUTOEQ/TEST_TDCNFx.py', description='TEST_TDCNFx_2', folder_suffix='TEST_TDCNFx_2', weight_initialization=None),
+    'compute_receptive_field': <function compute_receptive_field at 0x7fa4d29000e0>,
+    'compute_stft': <function compute_stft at 0x7fa4d3ce4cb0>,
+    'config': {   'ACCEPTED_SAMPLING_RATES': [44100],
+                  'AMSGRAD': True,
+                  'AUGMENTER_CHAIN': AugmentationChain(fxs=[], shuffle=False),
+                  'AUGMENTER_PADDING': (0, 0),
+                  'BATCHED_VALID': True,
+                  'BATCH_SIZE': 20,
+                  'CUDNN_BENCHMARK': True,
+                  'DATA_DIR_TRAIN': [('/data/martinez/audio/automix/MUSDB18/train_eq_matched_avg3', False)],
+                  'DATA_DIR_VALID': [('/data/martinez/audio/automix/MUSDB18/val_eq_matched_avg3', False)],
+                  'DEBUG': False,
+                  'FFT_SIZE': 4096,
+                  'GRAD_CLIP_MAX_NORM': 0.2,
+                  'GRAD_CLIP_NORM_TYPE': 2,
+                  'GUARD_LEFT': 32446,
+                  'GUARD_RIGHT': 32446,
+                  'HOP_LENGTH': 1024,
+                  'INITIAL_LEARNING_RATE': 0.001,
+                  'INIT_NETWORK': None,
+                  'INPUTS': ['vocals', 'bass', 'drums', 'other'],
+                  'KERNEL_SIZE_ENCODER': 64,
+                  'KERNEL_SIZE_TB': 3,
+                  'L2_REGULARIZATION': 1e-06,
+                  'LEARNING_RATES': [   (1, 0.0),
+                                        (40, 0.001),
+                                        (20, 0.0003333333333333333),
+                                        (20, 0.0001),
+                                        (10, 3.3333333333333335e-05),
+                                        (10, 1e-05),
+                                        (5, 1e-06)],
+                  'MAPPED_SOURCES': {},
+                  'MAX_POOLING': 64,
+                  'MAX_PROCESSED_FREQUENCY': 16000.0,
+                  'MAX_VALIDATION_SEQ_LENGTH_TD': 10584000,
+                  'NET_TYPE': 'CAFX_TDCN',
+                  'NUM_DATAPROVIDING_PROCESSES': 16,
+                  'NUM_EPOCHS': 106,
+                  'N_BINS': 2049,
+                  'N_BINS_KEEP': 1486,
+                  'N_CHANNELS': 2,
+                  'N_FEATURES_ENCODER': 128,
+                  'N_FEATURES_OUT': 64,
+                  'N_FEATURES_SEPARATION_MODULE': 256,
+                  'N_FEATURES_TB': 128,
+                  'N_REPEATS': 4,
+                  'N_TB_PER_REPEAT': 6,
+                  'OUTPUTS': ['vocals', 'bass', 'drums', 'other'],
+                  'OVERLAP_PROBABILITY': {},
+                  'PRESENT_PROBABILITY': {},
+                  'PRETRAIN': True,
+                  'QUANTIZATION_BW': None,
+                  'QUANTIZATION_OP': None,
+                  'SAVE_NET_AT_EPOCHS': [],
+                  'SHUFFLE_CHANNELS': False,
+                  'SHUFFLE_STEMS': False,
+                  'SOURCES': ['vocals', 'bass', 'drums', 'other', 'vocals', 'bass', 'drums', 'other'],
+                  'STFT_WINDOW': array([0.        , 0.00076699, 0.00153398, ..., 0.00230097, 0.00153398,
+       0.00076699]),
+                  'TARGETS': [('mixture',)],
+                  'TENSORBOARD': True,
+                  'TRAINING_SEQ_LENGTH': 132288,
+                  'TRAIN_LOSSES': [Loss(
+  (_loss): L1Loss()
+)],
+                  'USE_AMP': True,
+                  'VALID_LOSSES': OrderedDict([   ('l1', Loss(
+  (_loss): L1Loss()
+)),
+                                                  ('l2', Loss(
+  (_loss): MSELoss()
+)),
+                                                  ('td_l1', Loss(
+  (_loss): L1Loss()
+)),
+                                                  ('td_l2', Loss(
+  (_loss): MSELoss()
+)),
+                                                  (   'fir_l1',
+                                                      FIRFilterLoss(
+  (_loss): Loss(
+    (_loss): L1Loss()
+  )
+)),
+                                                  ('log_l2', LogFFT(
+  (_loss): Loss(
+    (_loss): MSELoss()
+  )
+))])},
+    'copyfile': <function copyfile at 0x7fa6234cb710>,
+    'cpu_count': <bound method BaseContext.cpu_count of <multiprocessing.context.DefaultContext object at 0x7fa60da13b10>>,
+    'create_dataset': <function create_dataset at 0x7fa4d28d4a70>,
+    'create_dataset_mixing': <function create_dataset_mixing at 0x7fa4d28d4b00>,
+    'create_minibatch': <function create_minibatch at 0x7fa4d28d4c20>,
+    'create_minibatch_mixing': <function create_minibatch_mixing at 0x7fa4d28d4cb0>,
+    'f': <_io.TextIOWrapper name='/home/martinez/automix/trainings/results/20210830-h17m08s25_PT1.9.0_TEST_TDCNFx_2/settings.log' mode='w' encoding='UTF-8'>,
+    'f_guard': 30,
+    'get_process_memory': <function get_process_memory at 0x7fa4d28d4710>,
+    'guard': 32446,
+    'loss_1': Loss(
+  (_loss): L1Loss()
+),
+    'loss_2': Loss(
+  (_loss): MSELoss()
+),
+    'loss_training': LinearCombinationLoss(
+  (_losses): ModuleList(
+    (0): Loss(
+      (_loss): L1Loss()
+    )
+    (1): Loss(
+      (_loss): MSELoss()
+    )
+  )
+),
+    'ngpus': 1,
+    'ngpus_per_src': 1,
+    'nn': <module 'torch.nn' from '/home/martinez/anaconda3/envs/conda3/lib/python3.7/site-packages/torch/nn/__init__.py'>,
+    'np': <module 'numpy' from '/home/martinez/anaconda3/envs/conda3/lib/python3.7/site-packages/numpy/__init__.py'>,
+    'optim': <module 'torch.optim' from '/home/martinez/anaconda3/envs/conda3/lib/python3.7/site-packages/torch/optim/__init__.py'>,
+    'os': <module 'os' from '/home/martinez/anaconda3/envs/conda3/lib/python3.7/os.py'>,
+    'parser': ArgumentParser(prog='train.py', usage=None, description='Training parser', formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True),
+    'pformat': <function pformat at 0x7fa6235e80e0>,
+    'plt': <module 'matplotlib.pyplot' from '/home/martinez/anaconda3/envs/conda3/lib/python3.7/site-packages/matplotlib/pyplot.py'>,
+    'random': <module 'random' from '/home/martinez/anaconda3/envs/conda3/lib/python3.7/random.py'>,
+    'recursive_getattr': <function recursive_getattr at 0x7fa4d3ce4d40>,
+    'results_folder': '/home/martinez/automix/trainings/results/20210830-h17m08s25_PT1.9.0_TEST_TDCNFx_2',
+    'seq_length_td': 132288,
+    'sklearn': <module 'sklearn' from '/home/martinez/anaconda3/envs/conda3/lib/python3.7/site-packages/sklearn/__init__.py'>,
+    'socket': <module 'socket' from '/home/martinez/anaconda3/envs/conda3/lib/python3.7/socket.py'>,
+    'subprocess': <module 'subprocess' from '/home/martinez/anaconda3/envs/conda3/lib/python3.7/subprocess.py'>,
+    'sys': <module 'sys' (built-in)>,
+    'td_length_from_fd': <function td_length_from_fd at 0x7fa4d28d4950>,
+    'tee': <subprocess.Popen object at 0x7fa4d28dc950>,
+    'time': <module 'time' (built-in)>,
+    'torch': <module 'torch' from '/home/martinez/anaconda3/envs/conda3/lib/python3.7/site-packages/torch/__init__.py'>,
+    'uprint': <function uprint at 0x7fa4d9fa5680>}
+
+
+Environment variables:
+{   'CONDA_DEFAULT_ENV': 'conda3',
+    'CONDA_EXE': '/home/martinez/anaconda3/bin/conda',
+    'CONDA_MKL_INTERFACE_LAYER_BACKUP': '',
+    'CONDA_PREFIX': '/home/martinez/anaconda3/envs/conda3',
+    'CONDA_PREFIX_1': '/home/martinez/anaconda3',
+    'CONDA_PROMPT_MODIFIER': '(conda3) ',
+    'CONDA_PYTHON_EXE': '/home/martinez/anaconda3/bin/python',
+    'CONDA_SHLVL': '2',
+    'CONFIGS_FOLDER': '/home/martinez/automix/configs/AUTOEQ',
+    'CUDA_VISIBLE_DEVICES': '3',
+    'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1005/bus',
+    'DESCRIPTION': 'TEST_TDCNFx_2',
+    'FOLDER_SUFFIX': 'TEST_TDCNFx_2',
+    'HOME': '/home/martinez',
+    'KMP_DUPLICATE_LIB_OK': 'True',
+    'KMP_INIT_AT_FORK': 'FALSE',
+    'LANG': 'en_US.UTF-8',
+    'LC_ADDRESS': 'ja_JP.UTF-8',
+    'LC_IDENTIFICATION': 'ja_JP.UTF-8',
+    'LC_MEASUREMENT': 'ja_JP.UTF-8',
+    'LC_MONETARY': 'ja_JP.UTF-8',
+    'LC_NAME': 'ja_JP.UTF-8',
+    'LC_NUMERIC': 'ja_JP.UTF-8',
+    'LC_PAPER': 'ja_JP.UTF-8',
+    'LC_TELEPHONE': 'ja_JP.UTF-8',
+    'LC_TIME': 'ja_JP.UTF-8',
+    'LESSCLOSE': '/usr/bin/lesspipe %s %s',
+    'LESSOPEN': '| /usr/bin/lesspipe %s',
+    'LOGNAME': 'martinez',
+    'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:',
+    'MKL_INTERFACE_LAYER': 'LP64,GNU',
+    'MOTD_SHOWN': 'pam',
+    'OLDPWD': '/home/martinez/automix/scripts',
+    'OMP_NUM_THREADS': '1',
+    'PATH': '/home/martinez/anaconda3/envs/conda3/bin:/home/martinez/anaconda3/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin',
+    'PWD': '/home/martinez/automix/automix',
+    'RESULTS_FOLDER': '/home/martinez/automix/trainings',
+    'SHELL': '/bin/bash',
+    'SHLVL': '1',
+    'SSH_CLIENT': '43.15.135.19 63181 22',
+    'SSH_CONNECTION': '43.15.135.19 63181 43.4.23.217 22',
+    'SSH_TTY': '/dev/pts/9',
+    'TERM': 'xterm',
+    'USER': 'martinez',
+    'XDG_DATA_DIRS': '/usr/local/share:/usr/share:/var/lib/snapd/desktop',
+    'XDG_RUNTIME_DIR': '/run/user/1005',
+    'XDG_SESSION_CLASS': 'user',
+    'XDG_SESSION_ID': '6418',
+    'XDG_SESSION_TYPE': 'tty',
+    '_': '/home/martinez/anaconda3/envs/conda3/bin/python',
+    '_CE_CONDA': '',
+    '_CE_M': ''}
+
+Collecting `git` statistics
+8170d69a5f00e0fd2d4675ea3916bc5f231255a3
+* master
+diff --git a/automix/common_networkbuilding_cafx_tdcn.py b/automix/common_networkbuilding_cafx_tdcn.py
+index 7976cca..fb241c5 100644
+--- a/automix/common_networkbuilding_cafx_tdcn.py
++++ b/automix/common_networkbuilding_cafx_tdcn.py
+@@ -25,35 +25,39 @@ from automix.common_miscellaneous import pad_to_shape
+ def compute_receptive_field(KERNEL_SIZE_ENCODER,
+                                 KERNEL_SIZE_TB,
+                                 N_TB_PER_REPEAT, 
+-                                N_REPEATS):
++                                N_REPEATS, MAX_POOLING):
+         
+         # Length of the encoder's filters, corresponding stride is half of it (L)
+         L = KERNEL_SIZE_ENCODER
+-        stride_enc = L/2
+-        stride_dec = L/2
++        stride_enc = 1
++        stride_dec = 1
+         # Kernel size in convolutional blocks (P)
+         P = KERNEL_SIZE_TB
+         # Number of temporal blocks in each repeat (X)
+         X = N_TB_PER_REPEAT
+         # Number of repeat (R)
+         R = N_REPEATS
++        
++        M = MAX_POOLING
+ 
+ #         X_2 = X//2
+ #         # Number of repeat (R_2)
+ #         R_2 = R//2
+ #         stride_dec_2 = stride_dec
+ 
+-        guard = ((R * (P - 1) // 2 * 2**X - 1) * L//2 + L)
++#         guard = ((R * (P - 1) // 2 * 2**X - 1) * L//2 + L)
+ 
+         # RF due to the dilations
+         d = []
+         for i in range(X):
+             d.append(np.power(2,i))
+         RF = 1 + R*(P-1)*np.sum(d)
+-        # RF due to the dilations+encoder
+-        RF = stride_enc * RF + (L - stride_enc)
+-        # RF due to the decoder
+-        RF = RF + (stride_enc)*(L - 1)
++        
++        guard = RF *M
++#         RF due to the dilations+encoder
++        guard = stride_enc * guard + (L - stride_enc)
++#         RF due to the decoder
++        guard = guard + (stride_enc)*(L - 1)
+ 
+ #         d = []
+ #         for i in range(X_2):
+@@ -242,7 +246,8 @@ class Net(SeparationNet):
+                  KERNEL_SIZE_TB,
+                  N_TB_PER_REPEAT,
+                  N_REPEATS,
+-                 PRETRAIN,
++                 PRETRAIN, 
++                 MAX_POOLING,
+                  **kwargs):
+         """
+         Initialize the network.
+@@ -278,6 +283,7 @@ class Net(SeparationNet):
+         self.n_filters = N_FEATURES_ENCODER
+         self.kernel_size = KERNEL_SIZE_ENCODER
+         self.pretrain = PRETRAIN
++        self.maxpoolsize = MAX_POOLING
+ 
+         # Separation part
+         self.layerNorm = nn.GroupNorm(1, N_FEATURES_ENCODER, eps=1e-8)
+@@ -318,6 +324,7 @@ class Net(SeparationNet):
+ 
+         self.conv_1 = nn.Conv1d(in_channels=n_channels*n_stems,
+                                 out_channels=N_FEATURES_ENCODER,
++                                groups=n_stems,
+                                 kernel_size=KERNEL_SIZE_ENCODER, bias=False,
+                                 stride=1,
+                                 padding='same')
+@@ -327,16 +334,17 @@ class Net(SeparationNet):
+         self.conv_2 = nn.Sequential(nn.Conv1d(in_channels=N_FEATURES_ENCODER,
+                                               out_channels=N_FEATURES_ENCODER,
+                                               groups=N_FEATURES_ENCODER,
+-                                              kernel_size=KERNEL_SIZE_ENCODER*2, 
++                                              kernel_size=KERNEL_SIZE_ENCODER*2, bias=False,
+                                               stride=1,
+                                               padding='same'),
+                                     nn.Softplus())
+ 
+-        self.maxpool1d = nn.MaxPool1d(kernel_size=64, return_indices=True)
++        self.maxpool1d = nn.MaxPool1d(kernel_size=self.maxpoolsize, return_indices=True)
+         
+         # ----- Synthesis back-end ----- #
+ 
+-        self.maxunpool1d = nn.MaxUnpool1d(64) if self.pretrain else nn.Upsample(scale_factor=64)
++        self.maxunpool1d = nn.MaxUnpool1d(self.maxpoolsize) if self.pretrain else nn.Upsample(scale_factor=
++                                                                                             self.maxpoolsize)
+         
+         self.se_block = SqueezeExcitation(n_channels=N_FEATURES_ENCODER, amplifying_ratio=16)
+ 
+@@ -366,7 +374,9 @@ class Net(SeparationNet):
+         """
+         batch_size, _, n_samples = x.shape
+         
+-#         print('input', x.size())
++#         print('input', x.size()) # batch_size, channels * stems, samples
++       
++
+ 
+         # ----- Adaptive front-end ----- #
+ 
+diff --git a/automix/eval_autoeq.py b/automix/eval_autoeq.py
+index a1801c5..97daae6 100644
+--- a/automix/eval_autoeq.py
++++ b/automix/eval_autoeq.py
+@@ -31,7 +31,7 @@ DEBUG = False
+ COMPUTE_INPUT_TARGET_LOSS = False
+ SAVE_TARGET_WAV = False
+ SAVE_OUTPUT_WAV = True
+-SAVE_STEMS = False
++SAVE_STEMS = True
+ 
+ COMPUTE_LOUDNESS = False
+ COMPUTE_SPECTRAL = False
+@@ -178,10 +178,15 @@ if __name__ == '__main__':
+         target = {}
+ 
+         for k, tag in enumerate(audio_tags):
+-            if tag in config['INPUTS']:
+-                stems[tag] = data_valid[i][data_key]()[k]
+-            elif tag in config['OUTPUTS']:
+-                target[tag] = data_valid[i][data_key]()[k]
++            
++            if config['INPUTS'] == config['OUTPUTS']:
++                    stems[tag] = data_valid[i][data_key]()[k]
++                    target[tag] = data_valid[i][data_key]()[k]
++            else:
++                if tag in config['INPUTS']:
++                    stems[tag] = data_valid[i][data_key]()[k]
++                elif tag in config['OUTPUTS']:
++                    target[tag] = data_valid[i][data_key]()[k]
+ 
+         for k, out in enumerate(config['OUTPUTS']):
+             data[k] = target[out][:samples]
+diff --git a/automix/train.py b/automix/train.py
+index 915ea03..ebbfb3a 100644
+--- a/automix/train.py
++++ b/automix/train.py
+@@ -528,7 +528,7 @@ def fill_queues(random_seed1, random_seed2):
+                 np.copyto(np_array[j], np_inp[source_name])
+                 
+             # shuffle order!
+-            if config['SHUFFLE']:
++            if config['SHUFFLE_STEMS']:
+                 if 'mixture' in config['OUTPUTS']:
+                     idx = 1
+                 else:
+@@ -546,6 +546,7 @@ def fill_queues(random_seed1, random_seed2):
+                 np.copyto(np_array[idx:-n_stems], tar_)
+                 
+                 # shuffle channels!
++            if config['SHUFFLE_CHANNELS']:
+                 channels = np.arange(np_array.shape[-1])
+                 np.random.shuffle(channels)
+                 np_array = np_array[..., channels]
+diff --git a/configs/AUTOEQ/AUTOEQ_4STEMS_MUSDB18_TDCNFx_PRETRAIN.py b/configs/AUTOEQ/AUTOEQ_4STEMS_MUSDB18_TDCNFx_PRETRAIN.py
+index 48adcc1..6ff1aa4 100644
+--- a/configs/AUTOEQ/AUTOEQ_4STEMS_MUSDB18_TDCNFx_PRETRAIN.py
++++ b/configs/AUTOEQ/AUTOEQ_4STEMS_MUSDB18_TDCNFx_PRETRAIN.py
+@@ -88,7 +88,8 @@ config['AUGMENTER_CHAIN'] = AugmentationChain()
+ # the augmenter and use a center-crop at its output, which should not be distorted by any boundary effects.
+ # Tuple contains the number of time samples that are added to the left/right.
+ config['AUGMENTER_PADDING'] = (0, 0)
+-config['SHUFFLE'] = True
++config['SHUFFLE_STEMS'] = False
++config['SHUFFLE_CHANNELS'] = False
+ 
+ """ SETTINGS RELATED TO NETWORK """
+ 
+@@ -110,6 +111,9 @@ config['N_FEATURES_ENCODER'] = 128
+ # Length of the encoder's filters, corresponding stride is half of it (L)
+ config['KERNEL_SIZE_ENCODER'] = 64
+ 
++# Length of max pooling
++config['MAX_POOLING'] = 64
++
+ # Number of features in the separation module, after bottleneck layer (B)
+ config['N_FEATURES_SEPARATION_MODULE'] = 256
+ 
+@@ -124,10 +128,10 @@ config['KERNEL_SIZE_TB'] = 3
+ 
+ # Number of temporal blocks in each repeat (X)
+ # Each repeat uses 2**0, 2**1, 2**2, 2**3, ... dilation factors in the 1D convolutions
+-config['N_TB_PER_REPEAT'] = 8
++config['N_TB_PER_REPEAT'] = 6
+ 
+ # Number of repeat (R)
+-config['N_REPEATS'] = 3
++config['N_REPEATS'] = 4
+ 
+ # Set how many samples we should discard in model output datatype
+ # to avoid boundary effects - e.g., due to receptive field of network
+@@ -137,7 +141,7 @@ config['N_REPEATS'] = 3
+ RF, guard = compute_receptive_field(config['KERNEL_SIZE_ENCODER'],
+                                         config['KERNEL_SIZE_TB'],
+                                         config['N_TB_PER_REPEAT'], 
+-                                        config['N_REPEATS'])
++                                        config['N_REPEATS'], config['MAX_POOLING'])
+ 
+ config['GUARD_LEFT'] = guard
+ 
+@@ -239,11 +243,11 @@ loss_1 = FIRFilterLoss(Loss(nn.L1Loss(), DataType.TIME_SAMPLES,
+ # loss_2 = LogFFT(Loss(nn.MSELoss(), DataType.STFT_MAGNITUDE,
+ #                      guard_left=f_guard, guard_right=f_guard))
+ 
+-loss_2 = Loss(nn.MSELoss(), DataType.STFT_MAGNITUDE,
+-                     guard_left=f_guard, guard_right=f_guard)
++# loss_2 = Loss(nn.MSELoss(), DataType.STFT_MAGNITUDE,
++#                      guard_left=f_guard, guard_right=f_guard)
+ 
+-loss_training = LinearCombinationLoss(losses=[loss_1, loss_2],
+-                                      weights=[1.0, 0.01])
++# loss_training = LinearCombinationLoss(losses=[loss_1, loss_2],
++#                                       weights=[1.0, 0.01])
+ 
+ # loss_training = LinearCombinationLoss(losses=[loss_1, loss_2],
+ #                                       weights=[1.0, 0.000001])
+@@ -254,7 +258,7 @@ loss_training = LinearCombinationLoss(losses=[loss_1, loss_2],
+ # loss_training = LinearCombinationLoss(losses=[loss_1, loss_2],
+ #                                       weights=[10., 0.000001])
+ 
+-config['TRAIN_LOSSES'] = [loss_training]
++config['TRAIN_LOSSES'] = [loss_1]
+ 
+ # Loss function(s) for validation (`OrderedDict`)
+ config['VALID_LOSSES'] = OrderedDict()
+diff --git a/configs/AUTOMIX_4STEMS_MUSDB18_TDCN.py b/configs/AUTOMIX_4STEMS_MUSDB18_TDCN.py
+deleted file mode 100644
+index bf8e4a9..0000000
+--- a/configs/AUTOMIX_4STEMS_MUSDB18_TDCN.py
++++ /dev/null
+@@ -1,220 +0,0 @@
+-"""Config file."""
+-
+-import numpy as np
+-import torch.nn as nn
+-from multiprocessing import cpu_count
+-from collections import OrderedDict
+-
+-from automix.common_audioeffects import AugmentationChain, Gain, Monauralize, SwapChannels
+-from automix.common_effectsnormalization import LoudnessNormalize
+-from automix.common_datatypes import DataType
+-from automix.common_losses import Loss, SDRLoss
+-
+-config = {}
+-
+-""" GENERAL SETTINGS """
+-
+-# Are we in debug mode?
+-config['DEBUG'] = False
+-
+-config['OUTPUTS'] = ['mixture']
+-
+-config['INPUTS'] = ['vocals', 'bass', 'drums', 'other']
+-
+-# list of all sources (used for creating mixture)
+-config['SOURCES'] = config['INPUTS'] + config['OUTPUTS']
+-# list of all sources that should be learned
+-# (subset of `config['SOURCES']`; use tuples with several sources to learn joint models)
+-config['TARGETS'] = [('mixture',)]
+-
+-# list of source mappings (to put several sources into one source group)
+-config['MAPPED_SOURCES'] = {}
+-
+-# Save some information to visualize on tensorboard
+-config['TENSORBOARD'] = True
+-
+-
+-""" SETTINGS RELATED TO SIGNAL PROCESSING """
+-
+-# Number of channels in the input data (1 = mono, 2 = stereo)
+-config['N_CHANNELS'] = 2
+-
+-# Accepted sampling rates (list)
+-config['ACCEPTED_SAMPLING_RATES'] = [44100]
+-
+-# FFT size (used only for loss computation here)
+-config['FFT_SIZE'] = 4096
+-
+-config['HOP_LENGTH'] = config['FFT_SIZE'] // 4
+-
+-# Analysis window for STFT (used only for loss computation here)
+-config['STFT_WINDOW'] = np.sqrt(np.hanning(config['FFT_SIZE']+1)[:-1])
+-
+-# Number of bins of an STFT frame (used only for loss computation here)
+-config['N_BINS'] = config['FFT_SIZE'] // 2 + 1
+-
+-
+-""" SETTINGS RELATED TO DATA AUGMENTATION """
+-
+-# Probability of source being present in the mixture
+-# (if not specified for a source then it is `1.` for that source)
+-config['PRESENT_PROBABILITY'] = {}
+-
+-# Probability of source overlap, i.e., of having superposition of two stems
+-# for the same source. This can, e.g., be used to train a dialogue extraction
+-# with two speakers being active at the same time from single speaker data.
+-# (if not specified for a source then it is `0.` for that source)
+-config['OVERLAP_PROBABILITY'] = {}
+-
+-# Initialize data augmentation chain
+-# Please see `common_audioeffects.py` for all available effects that can be used.
+-# In case you do not want to use any augmentation, just use `AugmentationChain()`.
+-# config['AUGMENTER_CHAIN'] = AugmentationChain([(LoudnessNormalize(sample_rate=int(np.mean(config['ACCEPTED_SAMPLING_RATES'])),
+-#                                                                   lufs_target=-15.0), 1., False)],
+-#                                               shuffle=False)
+-config['AUGMENTER_CHAIN'] = AugmentationChain()
+-# config['AUGMENTER_CHAIN'] = AugmentationChain([(Gain(), 1., False),
+-#                                                (SwapChannels(n_channels=config['N_CHANNELS']), 1., False),
+-#                                                (Monauralize(n_channels=config['N_CHANNELS']), 0.5, False)], shuffle=True)
+-
+-
+-# In order to avoid any boundary effects, it is possible to input longer sequences into
+-# the augmenter and use a center-crop at its output, which should not be distorted by any boundary effects.
+-# Tuple contains the number of time samples that are added to the left/right.
+-config['AUGMENTER_PADDING'] = (0, 0)
+-
+-
+-""" SETTINGS RELATED TO NETWORK """
+-
+-# Import network definition file
+-from automix.common_networkbuilding_tdcn import Net  # noqa E402, F401
+-
+-# THIS PARAMETER MAY BE USELESS HERE, BUT REQUIRED IN train.py FOR NOW
+-config['NET_TYPE'] = 'TDCN'
+-
+-# Initialization heuristic for network weights/biases
+-# (either `None` for PyTorch default or one of the initialization heuristics of `Net`)
+-config['INIT_NETWORK'] = None
+-
+-# Number of features after the encoder (N)
+-config['N_FEATURES_ENCODER'] = 32#256
+-
+-# Length of the encoder's filters, corresponding stride is half of it (L)
+-config['KERNEL_SIZE_ENCODER'] = 20
+-
+-# Number of features in the separation module, after bottleneck layer (B)
+-config['N_FEATURES_SEPARATION_MODULE'] = 512
+-
+-# Number of features at the output of the skip connection path in a temporal block (Sc)
+-config['N_FEATURES_OUT'] = 128
+-
+-# Number of features in the temporal blocks (H)
+-config['N_FEATURES_TB'] = 256
+-
+-# Kernel size in convolutional blocks (P)
+-config['KERNEL_SIZE_TB'] = 3
+-
+-# Number of temporal blocks in each repeat (X)
+-# Each repeat uses 2**0, 2**1, 2**2, 2**3, ... dilation factors in the 1D convolutions
+-config['N_TB_PER_REPEAT'] = 10
+-
+-# Number of repeat (R)
+-config['N_REPEATS'] = 4
+-
+-# Set how many samples we should discard in model output datatype
+-# to avoid boundary effects - e.g., due to receptive field of network
+-# (this is used for batched validation if `config['BATCHED_VALID'] = True` and
+-# can also be used during training if `guard_left`/`guard_right` are set for `config['TRAIN_LOSSES']`)
+-config['GUARD_LEFT'] = ((config['N_REPEATS'] * (config['KERNEL_SIZE_TB'] - 1) // 2
+-                        * 2**config['N_TB_PER_REPEAT'] - 1)
+-                        * config['KERNEL_SIZE_ENCODER']//2 + config['KERNEL_SIZE_ENCODER'])
+-config['GUARD_RIGHT'] = config['GUARD_LEFT']
+-
+-
+-""" SETTINGS RELATED TO TRAINING """
+-
+-# Use cnDNN to benchmark convolution algorithms and selects the fastest,
+-# i.e. set `torch.backends.cudnn.benchmark = True`
+-config['CUDNN_BENCHMARK'] = True
+-
+-# Number of sequences in each batch
+-config['BATCH_SIZE'] = 3
+-
+-# Optimization learning rate
+-# (`LEARNING_RATES` is a list of tuples `(epochs, learning rate)`)
+-config['INITIAL_LEARNING_RATE'] = 1e-3
+-config['LEARNING_RATES'] = [(300, config['INITIAL_LEARNING_RATE']),
+-                            (200, config['INITIAL_LEARNING_RATE'] / 3.0),
+-                            (200, config['INITIAL_LEARNING_RATE'] / 10.0),
+-                            (100, config['INITIAL_LEARNING_RATE'] / 30.0),
+-                            (100, config['INITIAL_LEARNING_RATE'] / 100.0),
+-                            (50, config['INITIAL_LEARNING_RATE'] / 1000.0)]
+-
+-# Define additional save points (i.e., epochs) where we store the network weights
+-config['SAVE_NET_AT_EPOCHS'] = []
+-
+-# Add warmup phase for Adam/Amsgrad
+-config['LEARNING_RATES'].insert(0, (1, 0.0))
+-config['SAVE_NET_AT_EPOCHS'] = [_+1 for _ in config['SAVE_NET_AT_EPOCHS']]
+-
+-# Compute total number of epochs
+-config['NUM_EPOCHS'] = np.sum(np.sum([_[0] for _ in config['LEARNING_RATES']]))
+-
+-# Length of one training sequence (in network input datatype format)
+-config['TRAINING_SEQ_LENGTH'] = 3 * min(config['ACCEPTED_SAMPLING_RATES'])
+-
+-# Frequency bins that we keep for processing (only up to 16khz to avoid instabilities)
+-# THIS IS NOT USEFUL FOR CONV-TASNET.
+-config['MAX_PROCESSED_FREQUENCY'] = np.minimum(16000.0, np.min(config['ACCEPTED_SAMPLING_RATES']) / 2.0)
+-config['N_BINS_KEEP'] = int(config['MAX_PROCESSED_FREQUENCY'] / (np.min(config['ACCEPTED_SAMPLING_RATES']) / 2.0) * config['N_BINS'])
+-
+-# L2-Regularization (use `None` to fully switch it off)
+-config['L2_REGULARIZATION'] = 1e-6
+-
+-# Gradient clipping
+-config['GRAD_CLIP_NORM_TYPE'] = 2  # e.g., `2` or `float('inf')
+-config['GRAD_CLIP_MAX_NORM'] = 0.2  # e.g., `0.1` or `None` (for adaptive clipping)
+-
+-# Number of data providers that fill the queues
+-config['NUM_DATAPROVIDING_PROCESSES'] = cpu_count() // 2
+-
+-# Use AMSGrad optimizer
+-config['AMSGRAD'] = True
+-
+-# Use quantization, if no quantization should be used then set to `None`
+-config['QUANTIZATION_OP'] = None
+-config['QUANTIZATION_BW'] = None
+-
+-# Use mixed-precision support
+-config['USE_AMP'] = True
+-
+-# Instead of processing full tracks for validation, use shorter segments having
+-# the same length as during training, stacked on the batch dimension in an overlap fashion
+-config['BATCHED_VALID'] = True
+-
+-# Loss function(s) for training (`list`)
+-config['TRAIN_LOSSES'] = [Loss(nn.L1Loss(), DataType.TIME_SAMPLES,
+-                               guard_left=config['GUARD_LEFT'], guard_right=config['GUARD_RIGHT'])]
+-
+-# Loss function(s) for validation (`OrderedDict`)
+-config['VALID_LOSSES'] = OrderedDict()
+-config['VALID_LOSSES']['l1'] = Loss(nn.L1Loss(), DataType.STFT_MAGNITUDE)
+-config['VALID_LOSSES']['l2'] = Loss(nn.MSELoss(), DataType.STFT_MAGNITUDE)
+-config['VALID_LOSSES']['sdr'] = Loss(SDRLoss(average_axis=(0, 1)), DataType.STFT_MAGNITUDE)
+-config['VALID_LOSSES']['td_l1'] = Loss(nn.L1Loss(), DataType.TIME_SAMPLES)
+-config['VALID_LOSSES']['td_l2'] = Loss(nn.MSELoss(), DataType.TIME_SAMPLES)
+-config['VALID_LOSSES']['td_sdr'] = Loss(SDRLoss(average_axis=(0, 1)), DataType.TIME_SAMPLES)
+-
+-# Maximum sequence length that is used during validation -- currently choosen to be 5 minutes
+-# (we only use these many samples from the start of the WAV file)
+-config['MAX_VALIDATION_SEQ_LENGTH_TD'] = 5 * 60 * np.max(config['ACCEPTED_SAMPLING_RATES'])
+-# TODO: Increase if we have larger GPUs
+-
+-# Specify folders where the training data is stored
+-config['DATA_DIR_TRAIN'] = []
+-config['DATA_DIR_TRAIN'].append(('/data3/AutoMix/MUSDB18/train_loudness_normalized', False))
+-
+-
+-# Specify folders where the validation data is stored
+-config['DATA_DIR_VALID'] = []
+-config['DATA_DIR_VALID'].append(('/data3/AutoMix/MUSDB18/test_loudness_normalized', False))
+diff --git a/configs/AUTOMIX_4STEMS_MUSDB18_TDCN_medium.py b/configs/AUTOMIX_4STEMS_MUSDB18_TDCN_medium.py
+deleted file mode 100644
+index e7987d4..0000000
+--- a/configs/AUTOMIX_4STEMS_MUSDB18_TDCN_medium.py
++++ /dev/null
+@@ -1,220 +0,0 @@
+-"""Config file."""
+-
+-import numpy as np
+-import torch.nn as nn
+-from multiprocessing import cpu_count
+-from collections import OrderedDict
+-
+-from automix.common_audioeffects import AugmentationChain, Gain, Monauralize, SwapChannels
+-from automix.common_effectsnormalization import LoudnessNormalize
+-from automix.common_datatypes import DataType
+-from automix.common_losses import Loss, SDRLoss
+-
+-config = {}
+-
+-""" GENERAL SETTINGS """
+-
+-# Are we in debug mode?
+-config['DEBUG'] = False
+-
+-config['OUTPUTS'] = ['mixture']
+-
+-config['INPUTS'] = ['vocals', 'bass', 'drums', 'other']
+-
+-# list of all sources (used for creating mixture)
+-config['SOURCES'] = config['INPUTS'] + config['OUTPUTS']
+-# list of all sources that should be learned
+-# (subset of `config['SOURCES']`; use tuples with several sources to learn joint models)
+-config['TARGETS'] = [('mixture',)]
+-
+-# list of source mappings (to put several sources into one source group)
+-config['MAPPED_SOURCES'] = {}
+-
+-# Save some information to visualize on tensorboard
+-config['TENSORBOARD'] = True
+-
+-
+-""" SETTINGS RELATED TO SIGNAL PROCESSING """
+-
+-# Number of channels in the input data (1 = mono, 2 = stereo)
+-config['N_CHANNELS'] = 2
+-
+-# Accepted sampling rates (list)
+-config['ACCEPTED_SAMPLING_RATES'] = [44100]
+-
+-# FFT size (used only for loss computation here)
+-config['FFT_SIZE'] = 4096
+-
+-config['HOP_LENGTH'] = config['FFT_SIZE'] // 4
+-
+-# Analysis window for STFT (used only for loss computation here)
+-config['STFT_WINDOW'] = np.sqrt(np.hanning(config['FFT_SIZE']+1)[:-1])
+-
+-# Number of bins of an STFT frame (used only for loss computation here)
+-config['N_BINS'] = config['FFT_SIZE'] // 2 + 1
+-
+-
+-""" SETTINGS RELATED TO DATA AUGMENTATION """
+-
+-# Probability of source being present in the mixture
+-# (if not specified for a source then it is `1.` for that source)
+-config['PRESENT_PROBABILITY'] = {}
+-
+-# Probability of source overlap, i.e., of having superposition of two stems
+-# for the same source. This can, e.g., be used to train a dialogue extraction
+-# with two speakers being active at the same time from single speaker data.
+-# (if not specified for a source then it is `0.` for that source)
+-config['OVERLAP_PROBABILITY'] = {}
+-
+-# Initialize data augmentation chain
+-# Please see `common_audioeffects.py` for all available effects that can be used.
+-# In case you do not want to use any augmentation, just use `AugmentationChain()`.
+-# config['AUGMENTER_CHAIN'] = AugmentationChain([(LoudnessNormalize(sample_rate=int(np.mean(config['ACCEPTED_SAMPLING_RATES'])),
+-#                                                                   lufs_target=-15.0), 1., False)],
+-#                                               shuffle=False)
+-config['AUGMENTER_CHAIN'] = AugmentationChain()
+-# config['AUGMENTER_CHAIN'] = AugmentationChain([(Gain(), 1., False),
+-#                                                (SwapChannels(n_channels=config['N_CHANNELS']), 1., False),
+-#                                                (Monauralize(n_channels=config['N_CHANNELS']), 0.5, False)], shuffle=True)
+-
+-
+-# In order to avoid any boundary effects, it is possible to input longer sequences into
+-# the augmenter and use a center-crop at its output, which should not be distorted by any boundary effects.
+-# Tuple contains the number of time samples that are added to the left/right.
+-config['AUGMENTER_PADDING'] = (0, 0)
+-
+-
+-""" SETTINGS RELATED TO NETWORK """
+-
+-# Import network definition file
+-from automix.common_networkbuilding_tdcn import Net  # noqa E402, F401
+-
+-# THIS PARAMETER MAY BE USELESS HERE, BUT REQUIRED IN train.py FOR NOW
+-config['NET_TYPE'] = 'TDCN'
+-
+-# Initialization heuristic for network weights/biases
+-# (either `None` for PyTorch default or one of the initialization heuristics of `Net`)
+-config['INIT_NETWORK'] = None
+-
+-# Number of features after the encoder (N)
+-config['N_FEATURES_ENCODER'] = 64#256
+-
+-# Length of the encoder's filters, corresponding stride is half of it (L)
+-config['KERNEL_SIZE_ENCODER'] = 20
+-
+-# Number of features in the separation module, after bottleneck layer (B)
+-config['N_FEATURES_SEPARATION_MODULE'] = 128#512
+-
+-# Number of features at the output of the skip connection path in a temporal block (Sc)
+-config['N_FEATURES_OUT'] = 32#128
+-
+-# Number of features in the temporal blocks (H)
+-config['N_FEATURES_TB'] = 64#256
+-
+-# Kernel size in convolutional blocks (P)
+-config['KERNEL_SIZE_TB'] = 3
+-
+-# Number of temporal blocks in each repeat (X)
+-# Each repeat uses 2**0, 2**1, 2**2, 2**3, ... dilation factors in the 1D convolutions
+-config['N_TB_PER_REPEAT'] = 8#10
+-
+-# Number of repeat (R)
+-config['N_REPEATS'] = 3#4
+-
+-# Set how many samples we should discard in model output datatype
+-# to avoid boundary effects - e.g., due to receptive field of network
+-# (this is used for batched validation if `config['BATCHED_VALID'] = True` and
+-# can also be used during training if `guard_left`/`guard_right` are set for `config['TRAIN_LOSSES']`)
+-config['GUARD_LEFT'] = ((config['N_REPEATS'] * (config['KERNEL_SIZE_TB'] - 1) // 2
+-                        * 2**config['N_TB_PER_REPEAT'] - 1)
+-                        * config['KERNEL_SIZE_ENCODER']//2 + config['KERNEL_SIZE_ENCODER'])
+-config['GUARD_RIGHT'] = config['GUARD_LEFT']
+-
+-
+-""" SETTINGS RELATED TO TRAINING """
+-
+-# Use cnDNN to benchmark convolution algorithms and selects the fastest,
+-# i.e. set `torch.backends.cudnn.benchmark = True`
+-config['CUDNN_BENCHMARK'] = True
+-
+-# Number of sequences in each batch
+-config['BATCH_SIZE'] = 3
+-
+-# Optimization learning rate
+-# (`LEARNING_RATES` is a list of tuples `(epochs, learning rate)`)
+-config['INITIAL_LEARNING_RATE'] = 1e-3
+-config['LEARNING_RATES'] = [(300, config['INITIAL_LEARNING_RATE']),
+-                            (200, config['INITIAL_LEARNING_RATE'] / 3.0),
+-                            (200, config['INITIAL_LEARNING_RATE'] / 10.0),
+-                            (100, config['INITIAL_LEARNING_RATE'] / 30.0),
+-                            (100, config['INITIAL_LEARNING_RATE'] / 100.0),
+-                            (50, config['INITIAL_LEARNING_RATE'] / 1000.0)]
+-
+-# Define additional save points (i.e., epochs) where we store the network weights
+-config['SAVE_NET_AT_EPOCHS'] = []
+-
+-# Add warmup phase for Adam/Amsgrad
+-config['LEARNING_RATES'].insert(0, (1, 0.0))
+-config['SAVE_NET_AT_EPOCHS'] = [_+1 for _ in config['SAVE_NET_AT_EPOCHS']]
+-
+-# Compute total number of epochs
+-config['NUM_EPOCHS'] = np.sum(np.sum([_[0] for _ in config['LEARNING_RATES']]))
+-
+-# Length of one training sequence (in network input datatype format)
+-config['TRAINING_SEQ_LENGTH'] = 3 * min(config['ACCEPTED_SAMPLING_RATES'])
+-
+-# Frequency bins that we keep for processing (only up to 16khz to avoid instabilities)
+-# THIS IS NOT USEFUL FOR CONV-TASNET.
+-config['MAX_PROCESSED_FREQUENCY'] = np.minimum(16000.0, np.min(config['ACCEPTED_SAMPLING_RATES']) / 2.0)
+-config['N_BINS_KEEP'] = int(config['MAX_PROCESSED_FREQUENCY'] / (np.min(config['ACCEPTED_SAMPLING_RATES']) / 2.0) * config['N_BINS'])
+-
+-# L2-Regularization (use `None` to fully switch it off)
+-config['L2_REGULARIZATION'] = 1e-6
+-
+-# Gradient clipping
+-config['GRAD_CLIP_NORM_TYPE'] = 2  # e.g., `2` or `float('inf')
+-config['GRAD_CLIP_MAX_NORM'] = 0.2  # e.g., `0.1` or `None` (for adaptive clipping)
+-
+-# Number of data providers that fill the queues
+-config['NUM_DATAPROVIDING_PROCESSES'] = cpu_count() // 2
+-
+-# Use AMSGrad optimizer
+-config['AMSGRAD'] = True
+-
+-# Use quantization, if no quantization should be used then set to `None`
+-config['QUANTIZATION_OP'] = None
+-config['QUANTIZATION_BW'] = None
+-
+-# Use mixed-precision support
+-config['USE_AMP'] = True
+-
+-# Instead of processing full tracks for validation, use shorter segments having
+-# the same length as during training, stacked on the batch dimension in an overlap fashion
+-config['BATCHED_VALID'] = True
+-
+-# Loss function(s) for training (`list`)
+-config['TRAIN_LOSSES'] = [Loss(nn.L1Loss(), DataType.TIME_SAMPLES,
+-                               guard_left=config['GUARD_LEFT'], guard_right=config['GUARD_RIGHT'])]
+-
+-# Loss function(s) for validation (`OrderedDict`)
+-config['VALID_LOSSES'] = OrderedDict()
+-config['VALID_LOSSES']['l1'] = Loss(nn.L1Loss(), DataType.STFT_MAGNITUDE)
+-config['VALID_LOSSES']['l2'] = Loss(nn.MSELoss(), DataType.STFT_MAGNITUDE)
+-config['VALID_LOSSES']['sdr'] = Loss(SDRLoss(average_axis=(0, 1)), DataType.STFT_MAGNITUDE)
+-config['VALID_LOSSES']['td_l1'] = Loss(nn.L1Loss(), DataType.TIME_SAMPLES)
+-config['VALID_LOSSES']['td_l2'] = Loss(nn.MSELoss(), DataType.TIME_SAMPLES)
+-config['VALID_LOSSES']['td_sdr'] = Loss(SDRLoss(average_axis=(0, 1)), DataType.TIME_SAMPLES)
+-
+-# Maximum sequence length that is used during validation -- currently choosen to be 5 minutes
+-# (we only use these many samples from the start of the WAV file)
+-config['MAX_VALIDATION_SEQ_LENGTH_TD'] = 5 * 60 * np.max(config['ACCEPTED_SAMPLING_RATES'])
+-# TODO: Increase if we have larger GPUs
+-
+-# Specify folders where the training data is stored
+-config['DATA_DIR_TRAIN'] = []
+-config['DATA_DIR_TRAIN'].append(('/data3/AutoMix/MUSDB18/train_loudness_normalized', False))
+-
+-
+-# Specify folders where the validation data is stored
+-config['DATA_DIR_VALID'] = []
+-config['DATA_DIR_VALID'].append(('/data3/AutoMix/MUSDB18/test_loudness_normalized', False))
+diff --git a/configs/AUTOMIX_4STEMS_MUSDB18_TDCN_small.py b/configs/AUTOMIX_4STEMS_MUSDB18_TDCN_small.py
+deleted file mode 100644
+index 78bbb33..0000000
+--- a/configs/AUTOMIX_4STEMS_MUSDB18_TDCN_small.py
++++ /dev/null
+@@ -1,220 +0,0 @@
+-"""Config file."""
+-
+-import numpy as np
+-import torch.nn as nn
+-from multiprocessing import cpu_count
+-from collections import OrderedDict
+-
+-from automix.common_audioeffects import AugmentationChain, Gain, Monauralize, SwapChannels
+-from automix.common_effectsnormalization import LoudnessNormalize
+-from automix.common_datatypes import DataType
+-from automix.common_losses import Loss, SDRLoss
+-
+-config = {}
+-
+-""" GENERAL SETTINGS """
+-
+-# Are we in debug mode?
+-config['DEBUG'] = False
+-
+-config['OUTPUTS'] = ['mixture']
+-
+-config['INPUTS'] = ['vocals', 'bass', 'drums', 'other']
+-
+-# list of all sources (used for creating mixture)
+-config['SOURCES'] = config['INPUTS'] + config['OUTPUTS']
+-# list of all sources that should be learned
+-# (subset of `config['SOURCES']`; use tuples with several sources to learn joint models)
+-config['TARGETS'] = [('mixture',)]
+-
+-# list of source mappings (to put several sources into one source group)
+-config['MAPPED_SOURCES'] = {}
+-
+-# Save some information to visualize on tensorboard
+-config['TENSORBOARD'] = True
+-
+-
+-""" SETTINGS RELATED TO SIGNAL PROCESSING """
+-
+-# Number of channels in the input data (1 = mono, 2 = stereo)
+-config['N_CHANNELS'] = 2
+-
+-# Accepted sampling rates (list)
+-config['ACCEPTED_SAMPLING_RATES'] = [44100]
+-
+-# FFT size (used only for loss computation here)
+-config['FFT_SIZE'] = 4096
+-
+-config['HOP_LENGTH'] = config['FFT_SIZE'] // 4
+-
+-# Analysis window for STFT (used only for loss computation here)
+-config['STFT_WINDOW'] = np.sqrt(np.hanning(config['FFT_SIZE']+1)[:-1])
+-
+-# Number of bins of an STFT frame (used only for loss computation here)
+-config['N_BINS'] = config['FFT_SIZE'] // 2 + 1
+-
+-
+-""" SETTINGS RELATED TO DATA AUGMENTATION """
+-
+-# Probability of source being present in the mixture
+-# (if not specified for a source then it is `1.` for that source)
+-config['PRESENT_PROBABILITY'] = {}
+-
+-# Probability of source overlap, i.e., of having superposition of two stems
+-# for the same source. This can, e.g., be used to train a dialogue extraction
+-# with two speakers being active at the same time from single speaker data.
+-# (if not specified for a source then it is `0.` for that source)
+-config['OVERLAP_PROBABILITY'] = {}
+-
+-# Initialize data augmentation chain
+-# Please see `common_audioeffects.py` for all available effects that can be used.
+-# In case you do not want to use any augmentation, just use `AugmentationChain()`.
+-# config['AUGMENTER_CHAIN'] = AugmentationChain([(LoudnessNormalize(sample_rate=int(np.mean(config['ACCEPTED_SAMPLING_RATES'])),
+-#                                                                   lufs_target=-15.0), 1., False)],
+-#                                               shuffle=False)
+-config['AUGMENTER_CHAIN'] = AugmentationChain()
+-# config['AUGMENTER_CHAIN'] = AugmentationChain([(Gain(), 1., False),
+-#                                                (SwapChannels(n_channels=config['N_CHANNELS']), 1., False),
+-#                                                (Monauralize(n_channels=config['N_CHANNELS']), 0.5, False)], shuffle=True)
+-
+-
+-# In order to avoid any boundary effects, it is possible to input longer sequences into
+-# the augmenter and use a center-crop at its output, which should not be distorted by any boundary effects.
+-# Tuple contains the number of time samples that are added to the left/right.
+-config['AUGMENTER_PADDING'] = (0, 0)
+-
+-
+-""" SETTINGS RELATED TO NETWORK """
+-
+-# Import network definition file
+-from automix.common_networkbuilding_tdcn import Net  # noqa E402, F401
+-
+-# THIS PARAMETER MAY BE USELESS HERE, BUT REQUIRED IN train.py FOR NOW
+-config['NET_TYPE'] = 'TDCN'
+-
+-# Initialization heuristic for network weights/biases
+-# (either `None` for PyTorch default or one of the initialization heuristics of `Net`)
+-config['INIT_NETWORK'] = None
+-
+-# Number of features after the encoder (N)
+-config['N_FEATURES_ENCODER'] = 1#256
+-
+-# Length of the encoder's filters, corresponding stride is half of it (L)
+-config['KERNEL_SIZE_ENCODER'] = 20
+-
+-# Number of features in the separation module, after bottleneck layer (B)
+-config['N_FEATURES_SEPARATION_MODULE'] = 32#512
+-
+-# Number of features at the output of the skip connection path in a temporal block (Sc)
+-config['N_FEATURES_OUT'] = 8#128
+-
+-# Number of features in the temporal blocks (H)
+-config['N_FEATURES_TB'] = 16#256
+-
+-# Kernel size in convolutional blocks (P)
+-config['KERNEL_SIZE_TB'] = 3
+-
+-# Number of temporal blocks in each repeat (X)
+-# Each repeat uses 2**0, 2**1, 2**2, 2**3, ... dilation factors in the 1D convolutions
+-config['N_TB_PER_REPEAT'] = 7#10
+-
+-# Number of repeat (R)
+-config['N_REPEATS'] = 2#4
+-
+-# Set how many samples we should discard in model output datatype
+-# to avoid boundary effects - e.g., due to receptive field of network
+-# (this is used for batched validation if `config['BATCHED_VALID'] = True` and
+-# can also be used during training if `guard_left`/`guard_right` are set for `config['TRAIN_LOSSES']`)
+-config['GUARD_LEFT'] = ((config['N_REPEATS'] * (config['KERNEL_SIZE_TB'] - 1) // 2
+-                        * 2**config['N_TB_PER_REPEAT'] - 1)
+-                        * config['KERNEL_SIZE_ENCODER']//2 + config['KERNEL_SIZE_ENCODER'])
+-config['GUARD_RIGHT'] = config['GUARD_LEFT']
+-
+-
+-""" SETTINGS RELATED TO TRAINING """
+-
+-# Use cnDNN to benchmark convolution algorithms and selects the fastest,
+-# i.e. set `torch.backends.cudnn.benchmark = True`
+-config['CUDNN_BENCHMARK'] = True
+-
+-# Number of sequences in each batch
+-config['BATCH_SIZE'] = 3
+-
+-# Optimization learning rate
+-# (`LEARNING_RATES` is a list of tuples `(epochs, learning rate)`)
+-config['INITIAL_LEARNING_RATE'] = 1e-3
+-config['LEARNING_RATES'] = [(300, config['INITIAL_LEARNING_RATE']),
+-                            (200, config['INITIAL_LEARNING_RATE'] / 3.0),
+-                            (200, config['INITIAL_LEARNING_RATE'] / 10.0),
+-                            (100, config['INITIAL_LEARNING_RATE'] / 30.0),
+-                            (100, config['INITIAL_LEARNING_RATE'] / 100.0),
+-                            (50, config['INITIAL_LEARNING_RATE'] / 1000.0)]
+-
+-# Define additional save points (i.e., epochs) where we store the network weights
+-config['SAVE_NET_AT_EPOCHS'] = []
+-
+-# Add warmup phase for Adam/Amsgrad
+-config['LEARNING_RATES'].insert(0, (1, 0.0))
+-config['SAVE_NET_AT_EPOCHS'] = [_+1 for _ in config['SAVE_NET_AT_EPOCHS']]
+-
+-# Compute total number of epochs
+-config['NUM_EPOCHS'] = np.sum(np.sum([_[0] for _ in config['LEARNING_RATES']]))
+-
+-# Length of one training sequence (in network input datatype format)
+-config['TRAINING_SEQ_LENGTH'] = 3 * min(config['ACCEPTED_SAMPLING_RATES'])
+-
+-# Frequency bins that we keep for processing (only up to 16khz to avoid instabilities)
+-# THIS IS NOT USEFUL FOR CONV-TASNET.
+-config['MAX_PROCESSED_FREQUENCY'] = np.minimum(16000.0, np.min(config['ACCEPTED_SAMPLING_RATES']) / 2.0)
+-config['N_BINS_KEEP'] = int(config['MAX_PROCESSED_FREQUENCY'] / (np.min(config['ACCEPTED_SAMPLING_RATES']) / 2.0) * config['N_BINS'])
+-
+-# L2-Regularization (use `None` to fully switch it off)
+-config['L2_REGULARIZATION'] = 1e-6
+-
+-# Gradient clipping
+-config['GRAD_CLIP_NORM_TYPE'] = 2  # e.g., `2` or `float('inf')
+-config['GRAD_CLIP_MAX_NORM'] = 0.2  # e.g., `0.1` or `None` (for adaptive clipping)
+-
+-# Number of data providers that fill the queues
+-config['NUM_DATAPROVIDING_PROCESSES'] = cpu_count() // 2
+-
+-# Use AMSGrad optimizer
+-config['AMSGRAD'] = True
+-
+-# Use quantization, if no quantization should be used then set to `None`
+-config['QUANTIZATION_OP'] = None
+-config['QUANTIZATION_BW'] = None
+-
+-# Use mixed-precision support
+-config['USE_AMP'] = True
+-
+-# Instead of processing full tracks for validation, use shorter segments having
+-# the same length as during training, stacked on the batch dimension in an overlap fashion
+-config['BATCHED_VALID'] = True
+-
+-# Loss function(s) for training (`list`)
+-config['TRAIN_LOSSES'] = [Loss(nn.L1Loss(), DataType.TIME_SAMPLES,
+-                               guard_left=config['GUARD_LEFT'], guard_right=config['GUARD_RIGHT'])]
+-
+-# Loss function(s) for validation (`OrderedDict`)
+-config['VALID_LOSSES'] = OrderedDict()
+-config['VALID_LOSSES']['l1'] = Loss(nn.L1Loss(), DataType.STFT_MAGNITUDE)
+-config['VALID_LOSSES']['l2'] = Loss(nn.MSELoss(), DataType.STFT_MAGNITUDE)
+-config['VALID_LOSSES']['sdr'] = Loss(SDRLoss(average_axis=(0, 1)), DataType.STFT_MAGNITUDE)
+-config['VALID_LOSSES']['td_l1'] = Loss(nn.L1Loss(), DataType.TIME_SAMPLES)
+-config['VALID_LOSSES']['td_l2'] = Loss(nn.MSELoss(), DataType.TIME_SAMPLES)
+-config['VALID_LOSSES']['td_sdr'] = Loss(SDRLoss(average_axis=(0, 1)), DataType.TIME_SAMPLES)
+-
+-# Maximum sequence length that is used during validation -- currently choosen to be 5 minutes
+-# (we only use these many samples from the start of the WAV file)
+-config['MAX_VALIDATION_SEQ_LENGTH_TD'] = 5 * 60 * np.max(config['ACCEPTED_SAMPLING_RATES'])
+-# TODO: Increase if we have larger GPUs
+-
+-# Specify folders where the training data is stored
+-config['DATA_DIR_TRAIN'] = []
+-config['DATA_DIR_TRAIN'].append(('/data3/AutoMix/MUSDB18/train_loudness_normalized', False))
+-
+-
+-# Specify folders where the validation data is stored
+-config['DATA_DIR_VALID'] = []
+-config['DATA_DIR_VALID'].append(('/data3/AutoMix/MUSDB18/test_loudness_normalized', False))
+diff --git a/notebooks/test_models.ipynb b/notebooks/test_models.ipynb
+index 0a2bf39..ccea825 100644
+--- a/notebooks/test_models.ipynb
++++ b/notebooks/test_models.ipynb
+@@ -1609,7 +1609,7 @@
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 36,
++   "execution_count": 3,
+    "id": "acoustic-vinyl",
+    "metadata": {},
+    "outputs": [
+@@ -1617,13 +1617,18 @@
+      "name": "stdout",
+      "output_type": "stream",
+      "text": [
+-      "0 ['1470835']\n",
+-      "martinez 1470835 95.8  1.3 37863608 6931340 pts/0 Rl  18:41   1:36 python train.py /home/martinez/automix/configs/AUTOEQ/AUTOEQ_4STEMS_MUSDB18_TDCNFx_PRETRAIN.py --folder-suffix AUTOEQ_4STEMS_MUSDB18_TDCNFx_PRETRAIN --description AUTOEQ_4STEMS_MUSDB18_TDCNFx_PRETRAIN\n",
+-      "martinez 1471247  0.0  0.0   2624   612 ?        S    18:43   0:00 /bin/sh -c ps aux | grep 1470835\n",
+-      "martinez 1471249  0.0  0.0  10088  2924 ?        S    18:43   0:00 grep 1470835\n",
++      "2 ['2985737']\n",
++      "martinez 2985737 99.4  1.8 54025088 9684588 pts/9 Rl  14:05 179:50 python train.py /home/martinez/automix/configs/AUTOEQ/AUTOEQ_4STEMS_MUSDB18_TDCNFx_PRETRAIN.py --folder-suffix AUTOEQ_4STEMS_MUSDB18_TDCNFx_PRETRAIN --description AUTOEQ_4STEMS_MUSDB18_TDCNFx_PRETRAIN\n",
++      "martinez 3050101  0.0  0.0   2624   608 ?        S    17:06   0:00 /bin/sh -c ps aux | grep 2985737\n",
++      "martinez 3050103  0.0  0.0  10088  2924 ?        S    17:06   0:00 grep 2985737\n",
+       "\n",
+       "killed\n",
+-      "1 []\n"
++      "3 ['45996']\n",
++      "martinez   45996 99.8  1.9 66285616 10244244 ?   Sl    8月24 8575:02 python train.py /home/martinez/automix/configs/AUTOEQ/05v1_AUTOEQ_4STEMS_MUSDB18_TDCNx2.py --folder-suffix 05v1_AUTOEQ_4STEMS_MUSDB18_TDCNx2 --description 05v1_AUTOEQ_4STEMS_MUSDB18_TDCNx2\n",
++      "martinez 3050109  0.0  0.0   2624   600 ?        S    17:06   0:00 /bin/sh -c ps aux | grep 45996\n",
++      "martinez 3050111  0.0  0.0  10088  2920 ?        S    17:06   0:00 grep 45996\n",
++      "\n",
++      "killed\n"
+      ]
+     }
+    ],
+@@ -1631,8 +1636,8 @@
+     "import os\n",
+     "KILL = True\n",
+     "gpus = [\n",
+-    "        0,\n",
+-    "        1,\n",
++    "#         0,\n",
++    "#         1,\n",
+     "#         2,\n",
+     "#         3\n",
+     "       ] # select which gpu\n",
+@@ -2698,97 +2703,176 @@
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 53,
++   "execution_count": 167,
+    "id": "6b44c2f8-5ca8-4998-8219-adce71bf333b",
+    "metadata": {},
+    "outputs": [],
+    "source": [
+-    "from automix.common_networkbuilding_tdcnx2_sigmoid import Net, compute_receptive_field  # noqa E402, F401\n",
++    "from automix.common_networkbuilding_cafx_tdcn import Net, compute_receptive_field  # noqa E402, F401\n",
+     "\n",
+     "# THIS PARAMETER MAY BE USELESS HERE, BUT REQUIRED IN train.py FOR NOW\n",
+-    "config['NET_TYPE'] = 'TDCNx2'\n",
++    "config['NET_TYPE'] = 'CAFX_TDCN'\n",
+     "\n",
++    "config['PRETRAIN'] = True\n",
+     "# Initialization heuristic for network weights/biases\n",
+     "# (either `None` for PyTorch default or one of the initialization heuristics of `Net`)\n",
+     "config['INIT_NETWORK'] = None\n",
+     "\n",
+     "# Number of features after the encoder (N)\n",
+-    "config['N_FEATURES_ENCODER'] = 256\n",
++    "config['N_FEATURES_ENCODER'] = 128\n",
+     "\n",
+     "# Length of the encoder's filters, corresponding stride is half of it (L)\n",
+-    "config['KERNEL_SIZE_ENCODER'] = 20\n",
++    "config['KERNEL_SIZE_ENCODER'] = 64\n",
+     "\n",
+     "# Number of features in the separation module, after bottleneck layer (B)\n",
+-    "config['N_FEATURES_SEPARATION_MODULE'] = 512\n",
++    "config['N_FEATURES_SEPARATION_MODULE'] = 256\n",
+     "\n",
+     "# Number of features at the output of the skip connection path in a temporal block (Sc)\n",
+-    "config['N_FEATURES_OUT'] = 128\n",
++    "config['N_FEATURES_OUT'] = 64\n",
+     "\n",
+     "# Number of features in the temporal blocks (H)\n",
+-    "config['N_FEATURES_TB'] = 256\n",
++    "config['N_FEATURES_TB'] = 128\n",
+     "\n",
+     "# Kernel size in convolutional blocks (P)\n",
+     "config['KERNEL_SIZE_TB'] = 3\n",
+     "\n",
+     "# Number of temporal blocks in each repeat (X)\n",
+     "# Each repeat uses 2**0, 2**1, 2**2, 2**3, ... dilation factors in the 1D convolutions\n",
+-    "config['N_TB_PER_REPEAT'] = 10\n",
++    "config['N_TB_PER_REPEAT'] = 6\n",
+     "\n",
+     "# Number of repeat (R)\n",
+-    "config['N_REPEATS'] = 2\n",
+-    "\n",
+-    "\n",
+-    "# Set how many samples we should discard in model output datatype\n",
+-    "# to avoid boundary effects - e.g., due to receptive field of network\n",
+-    "# (this is used for batched validation if `config['BATCHED_VALID'] = True` and\n",
+-    "# can also be used during training if `guard_left`/`guard_right` are set for `config['TRAIN_LOSSES']`)\n",
++    "config['N_REPEATS'] = 4\n",
+     "\n",
+     "RF, guard = compute_receptive_field(config['KERNEL_SIZE_ENCODER'],\n",
+     "                                        config['KERNEL_SIZE_TB'],\n",
+     "                                        config['N_TB_PER_REPEAT'], \n",
+-    "                                        config['N_REPEATS'])"
++    "                                        config['N_REPEATS'], 64)"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 168,
++   "id": "e569aa1b-0ea7-4657-a701-dfaa443f547d",
++   "metadata": {},
++   "outputs": [
++    {
++     "data": {
++      "text/plain": [
++       "32446"
++      ]
++     },
++     "execution_count": 168,
++     "metadata": {},
++     "output_type": "execute_result"
++    }
++   ],
++   "source": [
++    "guard"
+    ]
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 54,
++   "execution_count": 169,
++   "id": "d4589a85-d8fa-4206-b50e-5d4a47f528a8",
++   "metadata": {},
++   "outputs": [
++    {
++     "data": {
++      "text/plain": [
++       "505"
++      ]
++     },
++     "execution_count": 169,
++     "metadata": {},
++     "output_type": "execute_result"
++    }
++   ],
++   "source": [
++    "RF"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 170,
+    "id": "e14b4205-6817-49cd-9f6e-44fb055c9361",
+    "metadata": {},
+    "outputs": [
+     {
+      "data": {
+       "text/plain": [
+-       "90210"
++       "32320"
+       ]
+      },
+-     "execution_count": 54,
++     "execution_count": 170,
+      "metadata": {},
+      "output_type": "execute_result"
+     }
+    ],
+    "source": [
+-    "RF + 2*guard"
++    "RF*64"
+    ]
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 52,
++   "execution_count": 164,
+    "id": "fef96a71-abf9-4968-9146-705edb8a4e60",
+    "metadata": {},
+    "outputs": [
+     {
+      "data": {
+       "text/plain": [
+-       "90210"
++       "2067.1875"
+       ]
+      },
+-     "execution_count": 52,
++     "execution_count": 164,
+      "metadata": {},
+      "output_type": "execute_result"
+     }
+    ],
+    "source": [
+-    "RF + 2*guard"
++    "3*44100/64"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 171,
++   "id": "2831bb95-fa06-4b7b-9b57-ad04e2bfa47a",
++   "metadata": {},
++   "outputs": [
++    {
++     "data": {
++      "text/plain": [
++       "16536"
++      ]
++     },
++     "execution_count": 171,
++     "metadata": {},
++     "output_type": "execute_result"
++    }
++   ],
++   "source": [
++    "2067*8"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 165,
++   "id": "7e4bf0bf-6ebf-4937-a9ba-210d95901f9b",
++   "metadata": {},
++   "outputs": [
++    {
++     "data": {
++      "text/plain": [
++       "132300"
++      ]
++     },
++     "execution_count": 165,
++     "metadata": {},
++     "output_type": "execute_result"
++    }
++   ],
++   "source": [
++    "3*44100"
+    ]
+   },
+   {
+@@ -2896,9 +2980,51 @@
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": null,
++   "execution_count": 172,
+    "id": "fdde2955-39c0-4ca2-8a13-2384c5cbb3c9",
+    "metadata": {},
++   "outputs": [
++    {
++     "data": {
++      "text/plain": [
++       "1058304"
++      ]
++     },
++     "execution_count": 172,
++     "metadata": {},
++     "output_type": "execute_result"
++    }
++   ],
++   "source": [
++    "1058304"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 173,
++   "id": "fb598814-600d-4c23-b81b-76a88af392c6",
++   "metadata": {},
++   "outputs": [
++    {
++     "data": {
++      "text/plain": [
++       "132288"
++      ]
++     },
++     "execution_count": 173,
++     "metadata": {},
++     "output_type": "execute_result"
++    }
++   ],
++   "source": [
++    "2067*64\n"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": null,
++   "id": "94028e0f-a15a-456d-8bdb-381a3c743498",
++   "metadata": {},
+    "outputs": [],
+    "source": []
+   }
+diff --git a/scripts/eval_autoeq.sh b/scripts/eval_autoeq.sh
+index 3b72ee1..8e49bc0 100644
+--- a/scripts/eval_autoeq.sh
++++ b/scripts/eval_autoeq.sh
+@@ -2,18 +2,18 @@
+ # Script to train automix nets
+ 
+ SCRIPT_FOLDER="/home/martinez/automix/automix"
+-# MODELS_FOLDER="/home/martinez/automix/trainings/results/AUTOEQ"
+-MODELS_FOLDER="/home/martinez/automix/trainings/results"
++MODELS_FOLDER="/home/martinez/automix/trainings/results/AUTOEQ"
++# MODELS_FOLDER="/home/martinez/automix/trainings/results"
+ OUTPUT_FOLDER="/data/martinez/audio/automix/AutoEQResults"
+ INPUT_FOLDER="/data/martinez/audio/automix/MUSDB18/test_eq_matched_avg3"
+ 
+ # Change it script directory
+ cd ${SCRIPT_FOLDER}
+ 
+-export CUDA_VISIBLE_DEVICES=0
++export CUDA_VISIBLE_DEVICES=2
+ 
+-NET='20210827-h13m09s27_PT1.9.0_TEST_NA'
+-NET_PRETTY="TEST_NA"
++NET='01_AUTOEQ_4STEMS_MUSDB18_TDCNFx_PRETRAIN'
++NET_PRETTY="Pretrain"
+ SUB="current"
+ 
+ mkdir "${OUTPUT_FOLDER}/${NET_PRETTY}"
+@@ -26,8 +26,20 @@ python eval_autoeq.py ${INPUT_FOLDER} \
+                 --weights ${MODELS_FOLDER}/${NET}/current_model_for_mixture.params \
+                 --output ${OUTPUT_FOLDER}/${NET_PRETTY}/${SUB} \
+                 
+-                
++NET='01_AUTOEQ_4STEMS_MUSDB18_TDCNFx_PRETRAIN'
++NET_PRETTY="Pretrain"
++SUB="valid_td_l1"
+ 
++mkdir "${OUTPUT_FOLDER}/${NET_PRETTY}"
++mkdir "${OUTPUT_FOLDER}/${NET_PRETTY}/${SUB}"
++
++# train network for bass, drums, other and vocals
++python eval_autoeq.py ${INPUT_FOLDER} \
++                --training-params ${MODELS_FOLDER}/${NET}/config.py \
++                --nets ${MODELS_FOLDER}/${NET}/net_mixture.dump \
++                --weights ${MODELS_FOLDER}/${NET}/best_model_for_mixture_valid_td_l1_mean.params \
++                --output ${OUTPUT_FOLDER}/${NET_PRETTY}/${SUB} \
++                
+ 
+                 
+ #                 --weights ${MODELS_FOLDER}/${NET}/current_model_for_mixture.params \
+diff --git a/scripts/train_autoeq.sh b/scripts/train_autoeq.sh
+index e9e04aa..b85af05 100644
+--- a/scripts/train_autoeq.sh
++++ b/scripts/train_autoeq.sh
+@@ -8,7 +8,8 @@ export RESULTS_FOLDER="/home/martinez/automix/trainings"
+ export CONFIGS_FOLDER="/home/martinez/automix/configs/AUTOEQ"
+ 
+ cd ${SCRIPT_FOLDER}
+-export CUDA_VISIBLE_DEVICES=0
++export CUDA_VISIBLE_DEVICES=3
++
+ 
+ 
+ export OMP_NUM_THREADS=1
+@@ -20,12 +21,12 @@ export OMP_NUM_THREADS=1
+ # export DESCRIPTION="05v2_AUTOEQ_4STEMS_MUSDB18_TDCNx2"
+ 
+ # set folder suffix (optional)
+-export FOLDER_SUFFIX="AUTOEQ_4STEMS_MUSDB18_TDCNFx_PRETRAIN"
++export FOLDER_SUFFIX="TEST_TDCNFx_2"
+ 
+ # describe experiment (optional)
+-export DESCRIPTION="AUTOEQ_4STEMS_MUSDB18_TDCNFx_PRETRAIN"
++export DESCRIPTION="TEST_TDCNFx_2"
+ 
+ # train network for bass, drums, other and vocals
+-python train.py ${CONFIGS_FOLDER}/AUTOEQ_4STEMS_MUSDB18_TDCNFx_PRETRAIN.py \
++python train.py ${CONFIGS_FOLDER}/TEST_TDCNFx.py \
+                 --folder-suffix $FOLDER_SUFFIX                 \
+                 --description $DESCRIPTION &> ${RESULTS_FOLDER}/logs/${FOLDER_SUFFIX}.log < /dev/null &
+
+Maximum validation length is 4.00m
+Create dataset (train) ...
+
+Creating dataset for path=/data/martinez/audio/automix/MUSDB18/train_eq_matched_avg3 ...
+Processing mixture (1 of 86): A Classic Education - NightOwl
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (2 of 86): ANiMAL - Clinic A
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (3 of 86): ANiMAL - Easy Tiger
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (4 of 86): Actions - Devil's Words
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (5 of 86): Actions - South Of The Water
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (6 of 86): Aimee Norwich - Child
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (7 of 86): Alexander Ross - Velvet Curtain
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (8 of 86): Angela Thomas Wade - Milk Cow Blues
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (9 of 86): Atlantis Bound - It Was My Fault For Waiting
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (10 of 86): Auctioneer - Our Future Faces
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (11 of 86): AvaLuna - Waterduct
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (12 of 86): BigTroubles - Phantom
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (13 of 86): Bill Chudziak - Children Of No-one
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (14 of 86): Black Bloc - If You Want Success
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (15 of 86): Celestial Shore - Die For Us
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (16 of 86): Chris Durban - Celebrate
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (17 of 86): Clara Berry And Wooldog - Air Traffic
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (18 of 86): Clara Berry And Wooldog - Stella
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (19 of 86): Cnoc An Tursa - Bannockburn
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (20 of 86): Creepoid - OldTree
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (21 of 86): Dark Ride - Burning Bridges
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (22 of 86): Dreamers Of The Ghetto - Heavy Love
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (23 of 86): Drumtracks - Ghost Bitch
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (24 of 86): Faces On Film - Waiting For Ga
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (25 of 86): Fergessen - Back From The Start
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (26 of 86): Fergessen - The Wind
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (27 of 86): Flags - 54
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (28 of 86): Giselle - Moss
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (29 of 86): Grants - PunchDrunk
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (30 of 86): Helado Negro - Mitad Del Mundo
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (31 of 86): Hezekiah Jones - Borrowed Heart
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (32 of 86): Hollow Ground - Left Blind
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (33 of 86): Hop Along - Sister Cities
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (34 of 86): Invisible Familiars - Disturbing Wildlife
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (35 of 86): James May - All Souls Moon
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (36 of 86): James May - Dont Let Go
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (37 of 86): James May - If You Say
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (38 of 86): Jay Menon - Through My Eyes
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (39 of 86): Johnny Lokke - Whisper To A Scream
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (40 of 86): Jokers, Jacks & Kings - Sea Of Leaves
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (41 of 86): Leaf - Come Around
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (42 of 86): Leaf - Wicked
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (43 of 86): Lushlife - Toynbee Suite
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (44 of 86): Matthew Entwistle - Dont You Ever
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (45 of 86): Meaxic - You Listen
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (46 of 86): Music Delta - 80s Rock
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (47 of 86): Music Delta - Beatles
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (48 of 86): Music Delta - Britpop
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (49 of 86): Music Delta - Country1
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (50 of 86): Music Delta - Country2
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (51 of 86): Music Delta - Disco
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (52 of 86): Music Delta - Gospel
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (53 of 86): Music Delta - Grunge
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (54 of 86): Music Delta - Hendrix
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (55 of 86): Music Delta - Punk
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (56 of 86): Music Delta - Reggae
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (57 of 86): Music Delta - Rock
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (58 of 86): Music Delta - Rockabilly
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (59 of 86): Night Panther - Fire
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (60 of 86): North To Alaska - All The Same
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (61 of 86): Patrick Talbot - Set Me Free
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (62 of 86): Phre The Eon - Everybody's Falling Apart
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (63 of 86): Port St Willow - Stay Even
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (64 of 86): Remember December - C U Next Time
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (65 of 86): Secret Mountains - High Horse
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (66 of 86): Skelpolu - Together Alone
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (67 of 86): Snowmine - Curfews
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (68 of 86): Spike Mullings - Mike's Sulking
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (69 of 86): St Vitus - Word Gets Around
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (70 of 86): Steven Clark - Bounty
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (71 of 86): Strand Of Oaks - Spacestation
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (72 of 86): Sweet Lights - You Let Me Down
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (73 of 86): Swinging Steaks - Lost My Way
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (74 of 86): The Districts - Vermont
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (75 of 86): The Long Wait - Back Home To Blue
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (76 of 86): The Scarlet Brand - Les Fleurs Du Mal
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (77 of 86): The So So Glos - Emergency
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (78 of 86): The Wrong'Uns - Rothko
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (79 of 86): Tim Taler - Stalker
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (80 of 86): Titanium - Haunted Age
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (81 of 86): Traffic Experiment - Once More (With Feeling)
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (82 of 86): Triviul - Dorothy
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (83 of 86): Voelund - Comfort Lives In Belief
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (84 of 86): Wall Of Death - Femme
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (85 of 86): Young Griffo - Blood To Bone
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (86 of 86): Young Griffo - Facade
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Finished preparation of dataset. Found in total the following material (in 86 directories):
+	drums: 5.33 hours
+	bass: 5.33 hours
+	other: 5.33 hours
+	vocals: 5.33 hours
+	took 0.03s, current memory consumption is 1.15GB
+
+Create dataset (valid) ...
+
+Creating dataset for path=/data/martinez/audio/automix/MUSDB18/val_eq_matched_avg3 ...
+Processing mixture (1 of 14): ANiMAL - Rockshow
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (2 of 14): Actions - One Minute Smile
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (3 of 14): Alexander Ross - Goodbye Bolero
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (4 of 14): Clara Berry And Wooldog - Waltz For My Victims
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (5 of 14): Fergessen - Nos Palpitants
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (6 of 14): James May - On The Line
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (7 of 14): Johnny Lokke - Promises & Lies
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (8 of 14): Leaf - Summerghost
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (9 of 14): Meaxic - Take A Step
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (10 of 14): Patrick Talbot - A Reason To Leave
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (11 of 14): Skelpolu - Human Mistakes
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (12 of 14): Traffic Experiment - Sirens
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (13 of 14): Triviul - Angelsaint
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Processing mixture (14 of 14): Young Griffo - Pennies
+	Ignoring unknown source from file other_eq_matched.wav
+	Ignoring unknown source from file drums_eq_matched.wav
+	Ignoring unknown source from file bass_eq_matched.wav
+	Adding function handle for "drums" from file drums.wav
+	Ignoring unknown source from file vocals_eq_matched.wav
+	Ignoring unknown source from file mixture.wav
+	Adding function handle for "bass" from file bass.wav
+	Adding function handle for "other" from file other.wav
+	Adding function handle for "vocals" from file vocals.wav
+Finished preparation of dataset. Found in total the following material (in 14 directories):
+	drums: 1.03 hours
+	bass: 1.03 hours
+	other: 1.03 hours
+	vocals: 1.03 hours
+	took 0.00s, current memory consumption is 1.15GB
+
+Compute baseline losses ...
+	Lower baselines on validation dataset (time-domain, l1):
+		Mean	Median
+	vocals	0.082	0.082
+	bass	0.063	0.060
+	drums	0.061	0.062
+	other	0.063	0.062
+
+	Lower baselines on validation dataset (freq-domain, l1):
+		Mean	Median
+	vocals	1.214	1.059
+	bass	0.528	0.523
+	drums	0.528	0.464
+	other	0.716	0.614
+
+	Lower baselines on validation dataset (time-domain, l2):
+		Mean	Median
+	vocals	0.013	0.013
+	bass	0.008	0.007
+	drums	0.008	0.008
+	other	0.008	0.008
+
+	Lower baselines on validation dataset (freq-domain, l2):
+		Mean	Median
+	vocals	36.655	35.123
+	bass	15.780	13.683
+	drums	12.678	12.333
+	other	14.280	13.187
+
+	took 41.57s, current memory consumption is 3.72GB
+
+Compute mean/scale on training set ...
+	took 14.90s, current memory consumption is 3.72GB
+
+Create shared memory variables ...
+	took 1.54s, current memory consumption is 6.25GB
+
+Starting data providing process 0 with random seed 2624839142 and 2784511876
+Starting data providing process 1 with random seed 2144636532 and 2205442775
+Starting data providing process 2 with random seed 1270863794 and 2160783972
+Starting data providing process 3 with random seed 2748748696 and 1366344382
+Starting data providing process 4 with random seed 1748946682 and 3201300450
+Starting data providing process 5 with random seed 3715922743 and 1823358017
+Starting data providing process 6 with random seed 1855558721 and 2013570876
+Starting data providing process 7 with random seed 2107816371 and 3653761003
+Starting data providing process 8 with random seed 1006397984 and 2454085361
+Starting data providing process 9 with random seed 1940302189 and 2208209318
+Starting data providing process 10 with random seed 1222874516 and 1828179362
+Starting data providing process 11 with random seed 2946395146 and 1247457967
+Starting data providing process 12 with random seed 4041464907 and 1721778495
+Starting data providing process 13 with random seed 3192227085 and 4175218759
+Starting data providing process 14 with random seed 870849598 and 2339794325
+Starting data providing process 15 with random seed 867319350 and 915108962
+WARNING: Could not save TorchScript model.
+
+Network parameters for CAFX_TDCN:
+	layerNorm.weight              	[128]                    	128
+	layerNorm.bias                	[128]                    	128
+	bottleneck_conv1x1.weight     	[256, 128, 1]            	32768
+	bottleneck_conv1x1.bias       	[256]                    	256
+	repeats.0.0.conv1x1.weight    	[128, 256, 1]            	32768
+	repeats.0.0.conv1x1.bias      	[128]                    	128
+	repeats.0.0.nonlinearity1.weight	[1]                      	1
+	repeats.0.0.norm1.weight      	[128]                    	128
+	repeats.0.0.norm1.bias        	[128]                    	128
+	repeats.0.0.depthwise_conv.weight	[128, 1, 3]              	384
+	repeats.0.0.depthwise_conv.bias	[128]                    	128
+	repeats.0.0.nonlinearity2.weight	[1]                      	1
+	repeats.0.0.norm2.weight      	[128]                    	128
+	repeats.0.0.norm2.bias        	[128]                    	128
+	repeats.0.0.skip_out.weight   	[64, 128, 1]             	8192
+	repeats.0.0.skip_out.bias     	[64]                     	64
+	repeats.0.0.res_out.weight    	[256, 128, 1]            	32768
+	repeats.0.0.res_out.bias      	[256]                    	256
+	repeats.0.1.conv1x1.weight    	[128, 256, 1]            	32768
+	repeats.0.1.conv1x1.bias      	[128]                    	128
+	repeats.0.1.nonlinearity1.weight	[1]                      	1
+	repeats.0.1.norm1.weight      	[128]                    	128
+	repeats.0.1.norm1.bias        	[128]                    	128
+	repeats.0.1.depthwise_conv.weight	[128, 1, 3]              	384
+	repeats.0.1.depthwise_conv.bias	[128]                    	128
+	repeats.0.1.nonlinearity2.weight	[1]                      	1
+	repeats.0.1.norm2.weight      	[128]                    	128
+	repeats.0.1.norm2.bias        	[128]                    	128
+	repeats.0.1.skip_out.weight   	[64, 128, 1]             	8192
+	repeats.0.1.skip_out.bias     	[64]                     	64
+	repeats.0.1.res_out.weight    	[256, 128, 1]            	32768
+	repeats.0.1.res_out.bias      	[256]                    	256
+	repeats.0.2.conv1x1.weight    	[128, 256, 1]            	32768
+	repeats.0.2.conv1x1.bias      	[128]                    	128
+	repeats.0.2.nonlinearity1.weight	[1]                      	1
+	repeats.0.2.norm1.weight      	[128]                    	128
+	repeats.0.2.norm1.bias        	[128]                    	128
+	repeats.0.2.depthwise_conv.weight	[128, 1, 3]              	384
+	repeats.0.2.depthwise_conv.bias	[128]                    	128
+	repeats.0.2.nonlinearity2.weight	[1]                      	1
+	repeats.0.2.norm2.weight      	[128]                    	128
+	repeats.0.2.norm2.bias        	[128]                    	128
+	repeats.0.2.skip_out.weight   	[64, 128, 1]             	8192
+	repeats.0.2.skip_out.bias     	[64]                     	64
+	repeats.0.2.res_out.weight    	[256, 128, 1]            	32768
+	repeats.0.2.res_out.bias      	[256]                    	256
+	repeats.0.3.conv1x1.weight    	[128, 256, 1]            	32768
+	repeats.0.3.conv1x1.bias      	[128]                    	128
+	repeats.0.3.nonlinearity1.weight	[1]                      	1
+	repeats.0.3.norm1.weight      	[128]                    	128
+	repeats.0.3.norm1.bias        	[128]                    	128
+	repeats.0.3.depthwise_conv.weight	[128, 1, 3]              	384
+	repeats.0.3.depthwise_conv.bias	[128]                    	128
+	repeats.0.3.nonlinearity2.weight	[1]                      	1
+	repeats.0.3.norm2.weight      	[128]                    	128
+	repeats.0.3.norm2.bias        	[128]                    	128
+	repeats.0.3.skip_out.weight   	[64, 128, 1]             	8192
+	repeats.0.3.skip_out.bias     	[64]                     	64
+	repeats.0.3.res_out.weight    	[256, 128, 1]            	32768
+	repeats.0.3.res_out.bias      	[256]                    	256
+	repeats.0.4.conv1x1.weight    	[128, 256, 1]            	32768
+	repeats.0.4.conv1x1.bias      	[128]                    	128
+	repeats.0.4.nonlinearity1.weight	[1]                      	1
+	repeats.0.4.norm1.weight      	[128]                    	128
+	repeats.0.4.norm1.bias        	[128]                    	128
+	repeats.0.4.depthwise_conv.weight	[128, 1, 3]              	384
+	repeats.0.4.depthwise_conv.bias	[128]                    	128
+	repeats.0.4.nonlinearity2.weight	[1]                      	1
+	repeats.0.4.norm2.weight      	[128]                    	128
+	repeats.0.4.norm2.bias        	[128]                    	128
+	repeats.0.4.skip_out.weight   	[64, 128, 1]             	8192
+	repeats.0.4.skip_out.bias     	[64]                     	64
+	repeats.0.4.res_out.weight    	[256, 128, 1]            	32768
+	repeats.0.4.res_out.bias      	[256]                    	256
+	repeats.0.5.conv1x1.weight    	[128, 256, 1]            	32768
+	repeats.0.5.conv1x1.bias      	[128]                    	128
+	repeats.0.5.nonlinearity1.weight	[1]                      	1
+	repeats.0.5.norm1.weight      	[128]                    	128
+	repeats.0.5.norm1.bias        	[128]                    	128
+	repeats.0.5.depthwise_conv.weight	[128, 1, 3]              	384
+	repeats.0.5.depthwise_conv.bias	[128]                    	128
+	repeats.0.5.nonlinearity2.weight	[1]                      	1
+	repeats.0.5.norm2.weight      	[128]                    	128
+	repeats.0.5.norm2.bias        	[128]                    	128
+	repeats.0.5.skip_out.weight   	[64, 128, 1]             	8192
+	repeats.0.5.skip_out.bias     	[64]                     	64
+	repeats.0.5.res_out.weight    	[256, 128, 1]            	32768
+	repeats.0.5.res_out.bias      	[256]                    	256
+	repeats.1.0.conv1x1.weight    	[128, 256, 1]            	32768
+	repeats.1.0.conv1x1.bias      	[128]                    	128
+	repeats.1.0.nonlinearity1.weight	[1]                      	1
+	repeats.1.0.norm1.weight      	[128]                    	128
+	repeats.1.0.norm1.bias        	[128]                    	128
+	repeats.1.0.depthwise_conv.weight	[128, 1, 3]              	384
+	repeats.1.0.depthwise_conv.bias	[128]                    	128
+	repeats.1.0.nonlinearity2.weight	[1]                      	1
+	repeats.1.0.norm2.weight      	[128]                    	128
+	repeats.1.0.norm2.bias        	[128]                    	128
+	repeats.1.0.skip_out.weight   	[64, 128, 1]             	8192
+	repeats.1.0.skip_out.bias     	[64]                     	64
+	repeats.1.0.res_out.weight    	[256, 128, 1]            	32768
+	repeats.1.0.res_out.bias      	[256]                    	256
+	repeats.1.1.conv1x1.weight    	[128, 256, 1]            	32768
+	repeats.1.1.conv1x1.bias      	[128]                    	128
+	repeats.1.1.nonlinearity1.weight	[1]                      	1
+	repeats.1.1.norm1.weight      	[128]                    	128
+	repeats.1.1.norm1.bias        	[128]                    	128
+	repeats.1.1.depthwise_conv.weight	[128, 1, 3]              	384
+	repeats.1.1.depthwise_conv.bias	[128]                    	128
+	repeats.1.1.nonlinearity2.weight	[1]                      	1
+	repeats.1.1.norm2.weight      	[128]                    	128
+	repeats.1.1.norm2.bias        	[128]                    	128
+	repeats.1.1.skip_out.weight   	[64, 128, 1]             	8192
+	repeats.1.1.skip_out.bias     	[64]                     	64
+	repeats.1.1.res_out.weight    	[256, 128, 1]            	32768
+	repeats.1.1.res_out.bias      	[256]                    	256
+	repeats.1.2.conv1x1.weight    	[128, 256, 1]            	32768
+	repeats.1.2.conv1x1.bias      	[128]                    	128
+	repeats.1.2.nonlinearity1.weight	[1]                      	1
+	repeats.1.2.norm1.weight      	[128]                    	128
+	repeats.1.2.norm1.bias        	[128]                    	128
+	repeats.1.2.depthwise_conv.weight	[128, 1, 3]              	384
+	repeats.1.2.depthwise_conv.bias	[128]                    	128
+	repeats.1.2.nonlinearity2.weight	[1]                      	1
+	repeats.1.2.norm2.weight      	[128]                    	128
+	repeats.1.2.norm2.bias        	[128]                    	128
+	repeats.1.2.skip_out.weight   	[64, 128, 1]             	8192
+	repeats.1.2.skip_out.bias     	[64]                     	64
+	repeats.1.2.res_out.weight    	[256, 128, 1]            	32768
+	repeats.1.2.res_out.bias      	[256]                    	256
+	repeats.1.3.conv1x1.weight    	[128, 256, 1]            	32768
+	repeats.1.3.conv1x1.bias      	[128]                    	128
+	repeats.1.3.nonlinearity1.weight	[1]                      	1
+	repeats.1.3.norm1.weight      	[128]                    	128
+	repeats.1.3.norm1.bias        	[128]                    	128
+	repeats.1.3.depthwise_conv.weight	[128, 1, 3]              	384
+	repeats.1.3.depthwise_conv.bias	[128]                    	128
+	repeats.1.3.nonlinearity2.weight	[1]                      	1
+	repeats.1.3.norm2.weight      	[128]                    	128
+	repeats.1.3.norm2.bias        	[128]                    	128
+	repeats.1.3.skip_out.weight   	[64, 128, 1]             	8192
+	repeats.1.3.skip_out.bias     	[64]                     	64
+	repeats.1.3.res_out.weight    	[256, 128, 1]            	32768
+	repeats.1.3.res_out.bias      	[256]                    	256
+	repeats.1.4.conv1x1.weight    	[128, 256, 1]            	32768
+	repeats.1.4.conv1x1.bias      	[128]                    	128
+	repeats.1.4.nonlinearity1.weight	[1]                      	1
+	repeats.1.4.norm1.weight      	[128]                    	128
+	repeats.1.4.norm1.bias        	[128]                    	128
+	repeats.1.4.depthwise_conv.weight	[128, 1, 3]              	384
+	repeats.1.4.depthwise_conv.bias	[128]                    	128
+	repeats.1.4.nonlinearity2.weight	[1]                      	1
+	repeats.1.4.norm2.weight      	[128]                    	128
+	repeats.1.4.norm2.bias        	[128]                    	128
+	repeats.1.4.skip_out.weight   	[64, 128, 1]             	8192
+	repeats.1.4.skip_out.bias     	[64]                     	64
+	repeats.1.4.res_out.weight    	[256, 128, 1]            	32768
+	repeats.1.4.res_out.bias      	[256]                    	256
+	repeats.1.5.conv1x1.weight    	[128, 256, 1]            	32768
+	repeats.1.5.conv1x1.bias      	[128]                    	128
+	repeats.1.5.nonlinearity1.weight	[1]                      	1
+	repeats.1.5.norm1.weight      	[128]                    	128
+	repeats.1.5.norm1.bias        	[128]                    	128
+	repeats.1.5.depthwise_conv.weight	[128, 1, 3]              	384
+	repeats.1.5.depthwise_conv.bias	[128]                    	128
+	repeats.1.5.nonlinearity2.weight	[1]                      	1
+	repeats.1.5.norm2.weight      	[128]                    	128
+	repeats.1.5.norm2.bias        	[128]                    	128
+	repeats.1.5.skip_out.weight   	[64, 128, 1]             	8192
+	repeats.1.5.skip_out.bias     	[64]                     	64
+	repeats.1.5.res_out.weight    	[256, 128, 1]            	32768
+	repeats.1.5.res_out.bias      	[256]                    	256
+	repeats.2.0.conv1x1.weight    	[128, 256, 1]            	32768
+	repeats.2.0.conv1x1.bias      	[128]                    	128
+	repeats.2.0.nonlinearity1.weight	[1]                      	1
+	repeats.2.0.norm1.weight      	[128]                    	128
+	repeats.2.0.norm1.bias        	[128]                    	128
+	repeats.2.0.depthwise_conv.weight	[128, 1, 3]              	384
+	repeats.2.0.depthwise_conv.bias	[128]                    	128
+	repeats.2.0.nonlinearity2.weight	[1]                      	1
+	repeats.2.0.norm2.weight      	[128]                    	128
+	repeats.2.0.norm2.bias        	[128]                    	128
+	repeats.2.0.skip_out.weight   	[64, 128, 1]             	8192
+	repeats.2.0.skip_out.bias     	[64]                     	64
+	repeats.2.0.res_out.weight    	[256, 128, 1]            	32768
+	repeats.2.0.res_out.bias      	[256]                    	256
+	repeats.2.1.conv1x1.weight    	[128, 256, 1]            	32768
+	repeats.2.1.conv1x1.bias      	[128]                    	128
+	repeats.2.1.nonlinearity1.weight	[1]                      	1
+	repeats.2.1.norm1.weight      	[128]                    	128
+	repeats.2.1.norm1.bias        	[128]                    	128
+	repeats.2.1.depthwise_conv.weight	[128, 1, 3]              	384
+	repeats.2.1.depthwise_conv.bias	[128]                    	128
+	repeats.2.1.nonlinearity2.weight	[1]                      	1
+	repeats.2.1.norm2.weight      	[128]                    	128
+	repeats.2.1.norm2.bias        	[128]                    	128
+	repeats.2.1.skip_out.weight   	[64, 128, 1]             	8192
+	repeats.2.1.skip_out.bias     	[64]                     	64
+	repeats.2.1.res_out.weight    	[256, 128, 1]            	32768
+	repeats.2.1.res_out.bias      	[256]                    	256
+	repeats.2.2.conv1x1.weight    	[128, 256, 1]            	32768
+	repeats.2.2.conv1x1.bias      	[128]                    	128
+	repeats.2.2.nonlinearity1.weight	[1]                      	1
+	repeats.2.2.norm1.weight      	[128]                    	128
+	repeats.2.2.norm1.bias        	[128]                    	128
+	repeats.2.2.depthwise_conv.weight	[128, 1, 3]              	384
+	repeats.2.2.depthwise_conv.bias	[128]                    	128
+	repeats.2.2.nonlinearity2.weight	[1]                      	1
+	repeats.2.2.norm2.weight      	[128]                    	128
+	repeats.2.2.norm2.bias        	[128]                    	128
+	repeats.2.2.skip_out.weight   	[64, 128, 1]             	8192
+	repeats.2.2.skip_out.bias     	[64]                     	64
+	repeats.2.2.res_out.weight    	[256, 128, 1]            	32768
+	repeats.2.2.res_out.bias      	[256]                    	256
+	repeats.2.3.conv1x1.weight    	[128, 256, 1]            	32768
+	repeats.2.3.conv1x1.bias      	[128]                    	128
+	repeats.2.3.nonlinearity1.weight	[1]                      	1
+	repeats.2.3.norm1.weight      	[128]                    	128
+	repeats.2.3.norm1.bias        	[128]                    	128
+	repeats.2.3.depthwise_conv.weight	[128, 1, 3]              	384
+	repeats.2.3.depthwise_conv.bias	[128]                    	128
+	repeats.2.3.nonlinearity2.weight	[1]                      	1
+	repeats.2.3.norm2.weight      	[128]                    	128
+	repeats.2.3.norm2.bias        	[128]                    	128
+	repeats.2.3.skip_out.weight   	[64, 128, 1]             	8192
+	repeats.2.3.skip_out.bias     	[64]                     	64
+	repeats.2.3.res_out.weight    	[256, 128, 1]            	32768
+	repeats.2.3.res_out.bias      	[256]                    	256
+	repeats.2.4.conv1x1.weight    	[128, 256, 1]            	32768
+	repeats.2.4.conv1x1.bias      	[128]                    	128
+	repeats.2.4.nonlinearity1.weight	[1]                      	1
+	repeats.2.4.norm1.weight      	[128]                    	128
+	repeats.2.4.norm1.bias        	[128]                    	128
+	repeats.2.4.depthwise_conv.weight	[128, 1, 3]              	384
+	repeats.2.4.depthwise_conv.bias	[128]                    	128
+	repeats.2.4.nonlinearity2.weight	[1]                      	1
+	repeats.2.4.norm2.weight      	[128]                    	128
+	repeats.2.4.norm2.bias        	[128]                    	128
+	repeats.2.4.skip_out.weight   	[64, 128, 1]             	8192
+	repeats.2.4.skip_out.bias     	[64]                     	64
+	repeats.2.4.res_out.weight    	[256, 128, 1]            	32768
+	repeats.2.4.res_out.bias      	[256]                    	256
+	repeats.2.5.conv1x1.weight    	[128, 256, 1]            	32768
+	repeats.2.5.conv1x1.bias      	[128]                    	128
+	repeats.2.5.nonlinearity1.weight	[1]                      	1
+	repeats.2.5.norm1.weight      	[128]                    	128
+	repeats.2.5.norm1.bias        	[128]                    	128
+	repeats.2.5.depthwise_conv.weight	[128, 1, 3]              	384
+	repeats.2.5.depthwise_conv.bias	[128]                    	128
+	repeats.2.5.nonlinearity2.weight	[1]                      	1
+	repeats.2.5.norm2.weight      	[128]                    	128
+	repeats.2.5.norm2.bias        	[128]                    	128
+	repeats.2.5.skip_out.weight   	[64, 128, 1]             	8192
+	repeats.2.5.skip_out.bias     	[64]                     	64
+	repeats.2.5.res_out.weight    	[256, 128, 1]            	32768
+	repeats.2.5.res_out.bias      	[256]                    	256
+	repeats.3.0.conv1x1.weight    	[128, 256, 1]            	32768
+	repeats.3.0.conv1x1.bias      	[128]                    	128
+	repeats.3.0.nonlinearity1.weight	[1]                      	1
+	repeats.3.0.norm1.weight      	[128]                    	128
+	repeats.3.0.norm1.bias        	[128]                    	128
+	repeats.3.0.depthwise_conv.weight	[128, 1, 3]              	384
+	repeats.3.0.depthwise_conv.bias	[128]                    	128
+	repeats.3.0.nonlinearity2.weight	[1]                      	1
+	repeats.3.0.norm2.weight      	[128]                    	128
+	repeats.3.0.norm2.bias        	[128]                    	128
+	repeats.3.0.skip_out.weight   	[64, 128, 1]             	8192
+	repeats.3.0.skip_out.bias     	[64]                     	64
+	repeats.3.0.res_out.weight    	[256, 128, 1]            	32768
+	repeats.3.0.res_out.bias      	[256]                    	256
+	repeats.3.1.conv1x1.weight    	[128, 256, 1]            	32768
+	repeats.3.1.conv1x1.bias      	[128]                    	128
+	repeats.3.1.nonlinearity1.weight	[1]                      	1
+	repeats.3.1.norm1.weight      	[128]                    	128
+	repeats.3.1.norm1.bias        	[128]                    	128
+	repeats.3.1.depthwise_conv.weight	[128, 1, 3]              	384
+	repeats.3.1.depthwise_conv.bias	[128]                    	128
+	repeats.3.1.nonlinearity2.weight	[1]                      	1
+	repeats.3.1.norm2.weight      	[128]                    	128
+	repeats.3.1.norm2.bias        	[128]                    	128
+	repeats.3.1.skip_out.weight   	[64, 128, 1]             	8192
+	repeats.3.1.skip_out.bias     	[64]                     	64
+	repeats.3.1.res_out.weight    	[256, 128, 1]            	32768
+	repeats.3.1.res_out.bias      	[256]                    	256
+	repeats.3.2.conv1x1.weight    	[128, 256, 1]            	32768
+	repeats.3.2.conv1x1.bias      	[128]                    	128
+	repeats.3.2.nonlinearity1.weight	[1]                      	1
+	repeats.3.2.norm1.weight      	[128]                    	128
+	repeats.3.2.norm1.bias        	[128]                    	128
+	repeats.3.2.depthwise_conv.weight	[128, 1, 3]              	384
+	repeats.3.2.depthwise_conv.bias	[128]                    	128
+	repeats.3.2.nonlinearity2.weight	[1]                      	1
+	repeats.3.2.norm2.weight      	[128]                    	128
+	repeats.3.2.norm2.bias        	[128]                    	128
+	repeats.3.2.skip_out.weight   	[64, 128, 1]             	8192
+	repeats.3.2.skip_out.bias     	[64]                     	64
+	repeats.3.2.res_out.weight    	[256, 128, 1]            	32768
+	repeats.3.2.res_out.bias      	[256]                    	256
+	repeats.3.3.conv1x1.weight    	[128, 256, 1]            	32768
+	repeats.3.3.conv1x1.bias      	[128]                    	128
+	repeats.3.3.nonlinearity1.weight	[1]                      	1
+	repeats.3.3.norm1.weight      	[128]                    	128
+	repeats.3.3.norm1.bias        	[128]                    	128
+	repeats.3.3.depthwise_conv.weight	[128, 1, 3]              	384
+	repeats.3.3.depthwise_conv.bias	[128]                    	128
+	repeats.3.3.nonlinearity2.weight	[1]                      	1
+	repeats.3.3.norm2.weight      	[128]                    	128
+	repeats.3.3.norm2.bias        	[128]                    	128
+	repeats.3.3.skip_out.weight   	[64, 128, 1]             	8192
+	repeats.3.3.skip_out.bias     	[64]                     	64
+	repeats.3.3.res_out.weight    	[256, 128, 1]            	32768
+	repeats.3.3.res_out.bias      	[256]                    	256
+	repeats.3.4.conv1x1.weight    	[128, 256, 1]            	32768
+	repeats.3.4.conv1x1.bias      	[128]                    	128
+	repeats.3.4.nonlinearity1.weight	[1]                      	1
+	repeats.3.4.norm1.weight      	[128]                    	128
+	repeats.3.4.norm1.bias        	[128]                    	128
+	repeats.3.4.depthwise_conv.weight	[128, 1, 3]              	384
+	repeats.3.4.depthwise_conv.bias	[128]                    	128
+	repeats.3.4.nonlinearity2.weight	[1]                      	1
+	repeats.3.4.norm2.weight      	[128]                    	128
+	repeats.3.4.norm2.bias        	[128]                    	128
+	repeats.3.4.skip_out.weight   	[64, 128, 1]             	8192
+	repeats.3.4.skip_out.bias     	[64]                     	64
+	repeats.3.4.res_out.weight    	[256, 128, 1]            	32768
+	repeats.3.4.res_out.bias      	[256]                    	256
+	repeats.3.5.conv1x1.weight    	[128, 256, 1]            	32768
+	repeats.3.5.conv1x1.bias      	[128]                    	128
+	repeats.3.5.nonlinearity1.weight	[1]                      	1
+	repeats.3.5.norm1.weight      	[128]                    	128
+	repeats.3.5.norm1.bias        	[128]                    	128
+	repeats.3.5.depthwise_conv.weight	[128, 1, 3]              	384
+	repeats.3.5.depthwise_conv.bias	[128]                    	128
+	repeats.3.5.nonlinearity2.weight	[1]                      	1
+	repeats.3.5.norm2.weight      	[128]                    	128
+	repeats.3.5.norm2.bias        	[128]                    	128
+	repeats.3.5.skip_out.weight   	[64, 128, 1]             	8192
+	repeats.3.5.skip_out.bias     	[64]                     	64
+	repeats.3.5.res_out.weight    	[256, 128, 1]            	32768
+	repeats.3.5.res_out.bias      	[256]                    	256
+	output.0.weight               	[1]                      	1
+	output.1.weight               	[128, 64, 1]             	8192
+	output.1.bias                 	[128]                    	128
+	conv_1.weight                 	[128, 8, 64]             	65536
+	conv_2.0.weight               	[128, 1, 128]            	16384
+	se_block.net.0.weight         	[2048, 128]              	262144
+	se_block.net.0.bias           	[2048]                   	2048
+	se_block.net.2.weight         	[128, 2048]              	262144
+	se_block.net.2.bias           	[128]                    	128
+
+	In total this network has 2454833 parameters.
+
+Starting training with 319 minibatches as total number of samples is 846229647 ...
+ [mixture]	Epoch 1 of 106 took 3.01m + 1.11m + 0.02m (finished in 7.2h)	train={loss: 0.037375, max-gradnorm: 0.004913, reg-term: 0.000086}	valid={l1 mean: 0.513858, l1 median: 0.515318, l2 mean: 7.441125, l2 median: 7.352430, td_l1 mean: 0.038014, td_l1 median: 0.039896, td_l2 mean: 0.003693, td_l2 median: 0.003622, fir_l1 mean: 0.032932, fir_l1 median: 0.029019, log_l2 mean: 300.030380, log_l2 median: 217.530930}
+/home/martinez/anaconda3/envs/conda3/lib/python3.7/site-packages/torch/nn/modules/conv.py:295: UserWarning: Using padding='same' with even kernel lengths and odd dilation may require a zero-padded copy of the input be created (Triggered internally at  /opt/conda/conda-bld/pytorch_1623448265233/work/aten/src/ATen/native/Convolution.cpp:660.)
+  self.padding, self.dilation, self.groups)
+/home/martinez/anaconda3/envs/conda3/lib/python3.7/site-packages/torch/nn/functional.py:627: UserWarning: Named tensors and all their associated APIs are an experimental feature and subject to change. Please do not use them for anything important until they are released as stable. (Triggered internally at  /opt/conda/conda-bld/pytorch_1623448265233/work/c10/core/TensorImpl.h:1156.)
+  return torch.max_pool1d_with_indices(input, kernel_size, stride, padding, dilation, ceil_mode)
+ [mixture]	Epoch 2 of 106 took 2.99m + 1.02m + 0.02m (finished in 7.0h)	train={loss: 0.014981, max-gradnorm: 0.020106, reg-term: 0.000079}	valid={l1 mean: 0.258718, l1 median: 0.253268, l2 mean: 0.610293, l2 median: 0.591702, td_l1 mean: 0.012242, td_l1 median: 0.012185, td_l2 mean: 0.000450, td_l2 median: 0.000447, fir_l1 mean: 0.018377, fir_l1 median: 0.017421, log_l2 mean: 273.384264, log_l2 median: 196.864044}
+ [mixture]	Epoch 3 of 106 took 2.99m + 1.04m + 0.01m (finished in 6.9h)	train={loss: 0.011512, max-gradnorm: 0.022770, reg-term: 0.000090}	valid={l1 mean: 0.250796, l1 median: 0.244523, l2 mean: 0.556473, l2 median: 0.542061, td_l1 mean: 0.011835, td_l1 median: 0.011523, td_l2 mean: 0.000428, td_l2 median: 0.000412, fir_l1 mean: 0.017790, fir_l1 median: 0.016718, log_l2 mean: 268.609200, log_l2 median: 193.167732}
+ [mixture]	Epoch 4 of 106 took 2.99m + 1.03m + 0.01m (finished in 6.8h)	train={loss: 0.011511, max-gradnorm: 0.018006, reg-term: 0.000100}	valid={l1 mean: 0.251583, l1 median: 0.244936, l2 mean: 0.565577, l2 median: 0.549961, td_l1 mean: 0.012059, td_l1 median: 0.011837, td_l2 mean: 0.000443, td_l2 median: 0.000435, fir_l1 mean: 0.017930, fir_l1 median: 0.016883, log_l2 mean: 263.643230, log_l2 median: 189.551498}
+ [mixture]	Epoch 5 of 106 took 3.00m + 1.02m + 0.01m (finished in 6.8h)	train={loss: 0.011766, max-gradnorm: 0.015301, reg-term: 0.000107}	valid={l1 mean: 0.247791, l1 median: 0.241571, l2 mean: 0.554960, l2 median: 0.536530, td_l1 mean: 0.011808, td_l1 median: 0.011621, td_l2 mean: 0.000438, td_l2 median: 0.000423, fir_l1 mean: 0.017987, fir_l1 median: 0.016675, log_l2 mean: 263.994493, log_l2 median: 189.664566}
+ [mixture]	Epoch 6 of 106 took 2.99m + 1.11m + 0.01m (finished in 6.9h)	train={loss: 0.012149, max-gradnorm: 0.021746, reg-term: 0.000117}	valid={l1 mean: 0.253327, l1 median: 0.247532, l2 mean: 0.580755, l2 median: 0.565124, td_l1 mean: 0.012223, td_l1 median: 0.012012, td_l2 mean: 0.000459, td_l2 median: 0.000447, fir_l1 mean: 0.018464, fir_l1 median: 0.017075, log_l2 mean: 267.865178, log_l2 median: 192.735756}
+ [mixture]	Epoch 7 of 106 took 3.05m + 1.06m + 0.01m (finished in 6.8h)	train={loss: 0.011980, max-gradnorm: 0.016075, reg-term: 0.000121}	valid={l1 mean: 0.256295, l1 median: 0.248700, l2 mean: 0.588032, l2 median: 0.559832, td_l1 mean: 0.012328, td_l1 median: 0.012022, td_l2 mean: 0.000469, td_l2 median: 0.000449, fir_l1 mean: 0.018671, fir_l1 median: 0.017607, log_l2 mean: 265.343792, log_l2 median: 191.001801}
+ [mixture]	Epoch 8 of 106 took 3.06m + 1.03m + 0.01m (finished in 6.7h)	train={loss: 0.012117, max-gradnorm: 0.013623, reg-term: 0.000126}	valid={l1 mean: 0.253320, l1 median: 0.245612, l2 mean: 0.593339, l2 median: 0.562535, td_l1 mean: 0.012206, td_l1 median: 0.011888, td_l2 mean: 0.000469, td_l2 median: 0.000437, fir_l1 mean: 0.018433, fir_l1 median: 0.017045, log_l2 mean: 265.705734, log_l2 median: 190.559364}
+ [mixture]	Epoch 9 of 106 took 2.99m + 1.03m + 0.01m (finished in 6.5h)	train={loss: 0.012348, max-gradnorm: 0.015871, reg-term: 0.000132}	valid={l1 mean: 0.254891, l1 median: 0.247693, l2 mean: 0.625355, l2 median: 0.590562, td_l1 mean: 0.012502, td_l1 median: 0.012221, td_l2 mean: 0.000494, td_l2 median: 0.000450, fir_l1 mean: 0.018894, fir_l1 median: 0.017541, log_l2 mean: 264.037827, log_l2 median: 189.901833}
+ [mixture]	Epoch 10 of 106 took 2.99m + 1.03m + 0.01m (finished in 6.4h)	train={loss: 0.012477, max-gradnorm: 0.018597, reg-term: 0.000139}	valid={l1 mean: 0.264313, l1 median: 0.255651, l2 mean: 0.668824, l2 median: 0.634365, td_l1 mean: 0.013006, td_l1 median: 0.012701, td_l2 mean: 0.000526, td_l2 median: 0.000504, fir_l1 mean: 0.019292, fir_l1 median: 0.018127, log_l2 mean: 266.498055, log_l2 median: 191.788750}
+ [mixture]	Epoch 11 of 106 took 2.99m + 1.03m + 0.01m (finished in 6.4h)	train={loss: 0.012918, max-gradnorm: 0.016149, reg-term: 0.000143}	valid={l1 mean: 0.263665, l1 median: 0.255335, l2 mean: 0.708575, l2 median: 0.667931, td_l1 mean: 0.013013, td_l1 median: 0.012627, td_l2 mean: 0.000546, td_l2 median: 0.000521, fir_l1 mean: 0.019298, fir_l1 median: 0.017783, log_l2 mean: 264.852889, log_l2 median: 189.988663}
+ [mixture]	Epoch 12 of 106 took 2.99m + 1.03m + 0.01m (finished in 6.3h)	train={loss: 0.012338, max-gradnorm: 0.008909, reg-term: 0.000146}	valid={l1 mean: 0.258329, l1 median: 0.252127, l2 mean: 0.665092, l2 median: 0.623518, td_l1 mean: 0.012741, td_l1 median: 0.012439, td_l2 mean: 0.000525, td_l2 median: 0.000489, fir_l1 mean: 0.019128, fir_l1 median: 0.017745, log_l2 mean: 263.682278, log_l2 median: 189.399124}
+ [mixture]	Epoch 13 of 106 took 2.99m + 1.03m + 0.01m (finished in 6.2h)	train={loss: 0.012867, max-gradnorm: 0.010140, reg-term: 0.000155}	valid={l1 mean: 0.261227, l1 median: 0.254528, l2 mean: 0.683593, l2 median: 0.633178, td_l1 mean: 0.013119, td_l1 median: 0.012669, td_l2 mean: 0.000548, td_l2 median: 0.000501, fir_l1 mean: 0.019757, fir_l1 median: 0.018241, log_l2 mean: 265.121051, log_l2 median: 190.685349}
+ [mixture]	Epoch 14 of 106 took 2.99m + 1.03m + 0.01m (finished in 6.2h)	train={loss: 0.013092, max-gradnorm: 0.026935, reg-term: 0.000157}	valid={l1 mean: 0.273774, l1 median: 0.266326, l2 mean: 0.853915, l2 median: 0.759906, td_l1 mean: 0.014221, td_l1 median: 0.013838, td_l2 mean: 0.000647, td_l2 median: 0.000609, fir_l1 mean: 0.020169, fir_l1 median: 0.018939, log_l2 mean: 264.885511, log_l2 median: 190.509041}
+ [mixture]	Epoch 15 of 106 took 2.98m + 1.04m + 0.01m (finished in 6.1h)	train={loss: 0.012924, max-gradnorm: 0.020340, reg-term: 0.000162}	valid={l1 mean: 0.268776, l1 median: 0.257297, l2 mean: 0.712768, l2 median: 0.656920, td_l1 mean: 0.013155, td_l1 median: 0.012626, td_l2 mean: 0.000555, td_l2 median: 0.000513, fir_l1 mean: 0.019897, fir_l1 median: 0.018179, log_l2 mean: 271.587686, log_l2 median: 195.437584}
+ [mixture]	Epoch 16 of 106 took 2.99m + 0.98m + 0.01m (finished in 6.0h)	train={loss: 0.013094, max-gradnorm: 0.012225, reg-term: 0.000164}	valid={l1 mean: 0.266865, l1 median: 0.256215, l2 mean: 0.744193, l2 median: 0.669823, td_l1 mean: 0.013462, td_l1 median: 0.012855, td_l2 mean: 0.000583, td_l2 median: 0.000512, fir_l1 mean: 0.020182, fir_l1 median: 0.018261, log_l2 mean: 262.803150, log_l2 median: 189.551414}
+ [mixture]	Epoch 17 of 106 took 2.98m + 0.99m + 0.01m (finished in 5.9h)	train={loss: 0.013419, max-gradnorm: 0.017748, reg-term: 0.000165}	valid={l1 mean: 0.275954, l1 median: 0.265299, l2 mean: 0.805697, l2 median: 0.721173, td_l1 mean: 0.014174, td_l1 median: 0.013452, td_l2 mean: 0.000632, td_l2 median: 0.000576, fir_l1 mean: 0.020791, fir_l1 median: 0.019322, log_l2 mean: 267.304268, log_l2 median: 192.778000}
+ [mixture]	Epoch 18 of 106 took 3.07m + 0.99m + 0.01m (finished in 6.0h)	train={loss: 0.013491, max-gradnorm: 0.014581, reg-term: 0.000165}	valid={l1 mean: 0.275883, l1 median: 0.262116, l2 mean: 0.769565, l2 median: 0.666594, td_l1 mean: 0.013827, td_l1 median: 0.013160, td_l2 mean: 0.000616, td_l2 median: 0.000525, fir_l1 mean: 0.020853, fir_l1 median: 0.018752, log_l2 mean: 264.577784, log_l2 median: 190.325676}
+ [mixture]	Epoch 19 of 106 took 2.98m + 1.00m + 0.01m (finished in 5.8h)	train={loss: 0.013382, max-gradnorm: 0.014772, reg-term: 0.000166}	valid={l1 mean: 0.272191, l1 median: 0.261359, l2 mean: 0.777950, l2 median: 0.683400, td_l1 mean: 0.013821, td_l1 median: 0.013071, td_l2 mean: 0.000617, td_l2 median: 0.000533, fir_l1 mean: 0.020821, fir_l1 median: 0.018790, log_l2 mean: 263.698471, log_l2 median: 189.561653}
+ [mixture]	Epoch 20 of 106 took 3.01m + 1.38m + 0.01m (finished in 6.3h)	train={loss: 0.013743, max-gradnorm: 0.008488, reg-term: 0.000165}	valid={l1 mean: 0.274991, l1 median: 0.262756, l2 mean: 0.793265, l2 median: 0.679312, td_l1 mean: 0.013816, td_l1 median: 0.013086, td_l2 mean: 0.000626, td_l2 median: 0.000525, fir_l1 mean: 0.021022, fir_l1 median: 0.018749, log_l2 mean: 265.764425, log_l2 median: 190.772575}
+ [mixture]	Epoch 21 of 106 took 3.09m + 1.03m + 0.01m (finished in 5.9h)	train={loss: 0.013541, max-gradnorm: 0.011999, reg-term: 0.000171}	valid={l1 mean: 0.271693, l1 median: 0.262242, l2 mean: 0.763386, l2 median: 0.660118, td_l1 mean: 0.013698, td_l1 median: 0.013128, td_l2 mean: 0.000611, td_l2 median: 0.000518, fir_l1 mean: 0.020871, fir_l1 median: 0.018781, log_l2 mean: 263.620733, log_l2 median: 189.875603}
+ [mixture]	Epoch 22 of 106 took 2.98m + 0.99m + 0.01m (finished in 5.6h)	train={loss: 0.013557, max-gradnorm: 0.008547, reg-term: 0.000172}	valid={l1 mean: 0.272956, l1 median: 0.262377, l2 mean: 0.770263, l2 median: 0.628870, td_l1 mean: 0.013876, td_l1 median: 0.012974, td_l2 mean: 0.000621, td_l2 median: 0.000507, fir_l1 mean: 0.020970, fir_l1 median: 0.018782, log_l2 mean: 263.788336, log_l2 median: 189.413582}
+ [mixture]	Epoch 23 of 106 took 2.98m + 1.01m + 0.01m (finished in 5.5h)	train={loss: 0.013534, max-gradnorm: 0.006106, reg-term: 0.000172}	valid={l1 mean: 0.268463, l1 median: 0.258644, l2 mean: 0.751693, l2 median: 0.635045, td_l1 mean: 0.013555, td_l1 median: 0.013014, td_l2 mean: 0.000602, td_l2 median: 0.000509, fir_l1 mean: 0.020750, fir_l1 median: 0.018651, log_l2 mean: 263.855830, log_l2 median: 189.400131}
+ [mixture]	Epoch 24 of 106 took 2.98m + 0.99m + 0.01m (finished in 5.4h)	train={loss: 0.013742, max-gradnorm: 0.009654, reg-term: 0.000173}	valid={l1 mean: 0.273305, l1 median: 0.263306, l2 mean: 0.775912, l2 median: 0.678538, td_l1 mean: 0.013877, td_l1 median: 0.013247, td_l2 mean: 0.000623, td_l2 median: 0.000541, fir_l1 mean: 0.021168, fir_l1 median: 0.019094, log_l2 mean: 264.402582, log_l2 median: 190.335396}
+ [mixture]	Epoch 25 of 106 took 2.98m + 1.00m + 0.01m (finished in 5.4h)	train={loss: 0.013821, max-gradnorm: 0.008037, reg-term: 0.000174}	valid={l1 mean: 0.270787, l1 median: 0.261430, l2 mean: 0.774270, l2 median: 0.660247, td_l1 mean: 0.013738, td_l1 median: 0.013147, td_l2 mean: 0.000617, td_l2 median: 0.000524, fir_l1 mean: 0.020888, fir_l1 median: 0.018646, log_l2 mean: 260.976568, log_l2 median: 188.070213}
+ [mixture]	Epoch 26 of 106 took 2.98m + 1.00m + 0.01m (finished in 5.3h)	train={loss: 0.013639, max-gradnorm: 0.010841, reg-term: 0.000173}	valid={l1 mean: 0.279384, l1 median: 0.266058, l2 mean: 0.815050, l2 median: 0.693293, td_l1 mean: 0.014087, td_l1 median: 0.013301, td_l2 mean: 0.000647, td_l2 median: 0.000543, fir_l1 mean: 0.021423, fir_l1 median: 0.019070, log_l2 mean: 262.041748, log_l2 median: 188.786995}
+ [mixture]	Epoch 27 of 106 took 2.98m + 1.00m + 0.01m (finished in 5.3h)	train={loss: 0.014046, max-gradnorm: 0.010881, reg-term: 0.000174}	valid={l1 mean: 0.276946, l1 median: 0.263715, l2 mean: 0.827694, l2 median: 0.710719, td_l1 mean: 0.014195, td_l1 median: 0.013451, td_l2 mean: 0.000655, td_l2 median: 0.000550, fir_l1 mean: 0.021561, fir_l1 median: 0.019182, log_l2 mean: 264.112593, log_l2 median: 189.791359}
+ [mixture]	Epoch 28 of 106 took 2.98m + 1.05m + 0.01m (finished in 5.2h)	train={loss: 0.013951, max-gradnorm: 0.019350, reg-term: 0.000172}	valid={l1 mean: 0.272969, l1 median: 0.261589, l2 mean: 0.803404, l2 median: 0.721658, td_l1 mean: 0.013990, td_l1 median: 0.013240, td_l2 mean: 0.000633, td_l2 median: 0.000564, fir_l1 mean: 0.021160, fir_l1 median: 0.019225, log_l2 mean: 266.110988, log_l2 median: 190.754242}
+ [mixture]	Epoch 29 of 106 took 2.89m + 1.15m + 0.01m (finished in 5.2h)	train={loss: 0.013725, max-gradnorm: 0.009973, reg-term: 0.000172}	valid={l1 mean: 0.277813, l1 median: 0.265232, l2 mean: 0.821875, l2 median: 0.701612, td_l1 mean: 0.014020, td_l1 median: 0.013280, td_l2 mean: 0.000643, td_l2 median: 0.000533, fir_l1 mean: 0.021554, fir_l1 median: 0.019354, log_l2 mean: 265.042612, log_l2 median: 190.608559}
+ [mixture]	Epoch 30 of 106 took 2.88m + 1.18m + 0.01m (finished in 5.1h)	train={loss: 0.013840, max-gradnorm: 0.007052, reg-term: 0.000168}	valid={l1 mean: 0.276811, l1 median: 0.265193, l2 mean: 0.803959, l2 median: 0.691199, td_l1 mean: 0.013990, td_l1 median: 0.013289, td_l2 mean: 0.000639, td_l2 median: 0.000540, fir_l1 mean: 0.021100, fir_l1 median: 0.018906, log_l2 mean: 262.834252, log_l2 median: 188.676674}
+ [mixture]	Epoch 31 of 106 took 2.88m + 1.42m + 0.01m (finished in 5.4h)	train={loss: 0.013639, max-gradnorm: 0.009600, reg-term: 0.000170}	valid={l1 mean: 0.277700, l1 median: 0.266655, l2 mean: 0.799854, l2 median: 0.734227, td_l1 mean: 0.013861, td_l1 median: 0.013294, td_l2 mean: 0.000629, td_l2 median: 0.000565, fir_l1 mean: 0.021132, fir_l1 median: 0.019171, log_l2 mean: 262.661304, log_l2 median: 188.205276}
+ [mixture]	Epoch 32 of 106 took 2.89m + 1.29m + 0.01m (finished in 5.2h)	train={loss: 0.013763, max-gradnorm: 0.008331, reg-term: 0.000172}	valid={l1 mean: 0.282857, l1 median: 0.272995, l2 mean: 0.808505, l2 median: 0.732560, td_l1 mean: 0.014083, td_l1 median: 0.013605, td_l2 mean: 0.000636, td_l2 median: 0.000572, fir_l1 mean: 0.021370, fir_l1 median: 0.019456, log_l2 mean: 267.917657, log_l2 median: 191.570511}
+ [mixture]	Epoch 33 of 106 took 2.88m + 1.49m + 0.01m (finished in 5.3h)	train={loss: 0.013669, max-gradnorm: 0.012321, reg-term: 0.000170}	valid={l1 mean: 0.278789, l1 median: 0.269289, l2 mean: 0.778324, l2 median: 0.666310, td_l1 mean: 0.013724, td_l1 median: 0.013073, td_l2 mean: 0.000612, td_l2 median: 0.000521, fir_l1 mean: 0.021285, fir_l1 median: 0.019172, log_l2 mean: 268.703170, log_l2 median: 192.915779}
+ [mixture]	Epoch 34 of 106 took 2.91m + 1.41m + 0.01m (finished in 5.2h)	train={loss: 0.013717, max-gradnorm: 0.011480, reg-term: 0.000170}	valid={l1 mean: 0.272957, l1 median: 0.263869, l2 mean: 0.798686, l2 median: 0.700693, td_l1 mean: 0.013849, td_l1 median: 0.013219, td_l2 mean: 0.000626, td_l2 median: 0.000540, fir_l1 mean: 0.021205, fir_l1 median: 0.018962, log_l2 mean: 262.089494, log_l2 median: 188.397972}
+ [mixture]	Epoch 35 of 106 took 2.88m + 1.50m + 0.01m (finished in 5.2h)	train={loss: 0.013802, max-gradnorm: 0.013935, reg-term: 0.000171}	valid={l1 mean: 0.286752, l1 median: 0.277002, l2 mean: 0.837789, l2 median: 0.734109, td_l1 mean: 0.014238, td_l1 median: 0.013746, td_l2 mean: 0.000656, td_l2 median: 0.000571, fir_l1 mean: 0.021504, fir_l1 median: 0.019344, log_l2 mean: 265.949933, log_l2 median: 191.360573}
+ [mixture]	Epoch 36 of 106 took 2.87m + 1.21m + 0.01m (finished in 4.8h)	train={loss: 0.014002, max-gradnorm: 0.008398, reg-term: 0.000173}	valid={l1 mean: 0.280934, l1 median: 0.269934, l2 mean: 0.821399, l2 median: 0.717249, td_l1 mean: 0.014025, td_l1 median: 0.013458, td_l2 mean: 0.000644, td_l2 median: 0.000554, fir_l1 mean: 0.021284, fir_l1 median: 0.019169, log_l2 mean: 264.190615, log_l2 median: 190.067833}
+ [mixture]	Epoch 37 of 106 took 2.99m + 1.05m + 0.01m (finished in 4.7h)	train={loss: 0.013936, max-gradnorm: 0.014754, reg-term: 0.000173}	valid={l1 mean: 0.276625, l1 median: 0.268876, l2 mean: 0.824358, l2 median: 0.764897, td_l1 mean: 0.014029, td_l1 median: 0.013431, td_l2 mean: 0.000643, td_l2 median: 0.000591, fir_l1 mean: 0.021104, fir_l1 median: 0.019142, log_l2 mean: 265.069070, log_l2 median: 190.337967}
+ [mixture]	Epoch 38 of 106 took 2.99m + 1.01m + 0.01m (finished in 4.5h)	train={loss: 0.013925, max-gradnorm: 0.010119, reg-term: 0.000173}	valid={l1 mean: 0.283920, l1 median: 0.273852, l2 mean: 0.824597, l2 median: 0.766878, td_l1 mean: 0.014132, td_l1 median: 0.013607, td_l2 mean: 0.000644, td_l2 median: 0.000600, fir_l1 mean: 0.021353, fir_l1 median: 0.019499, log_l2 mean: 268.846988, log_l2 median: 192.940903}
+ [mixture]	Epoch 39 of 106 took 2.89m + 0.97m + 0.01m (finished in 4.3h)	train={loss: 0.013783, max-gradnorm: 0.020904, reg-term: 0.000176}	valid={l1 mean: 0.284879, l1 median: 0.272124, l2 mean: 0.820184, l2 median: 0.755033, td_l1 mean: 0.014080, td_l1 median: 0.013510, td_l2 mean: 0.000648, td_l2 median: 0.000573, fir_l1 mean: 0.021408, fir_l1 median: 0.019205, log_l2 mean: 264.415878, log_l2 median: 189.596687}
+ [mixture]	Epoch 40 of 106 took 2.87m + 0.97m + 0.01m (finished in 4.2h)	train={loss: 0.014134, max-gradnorm: 0.013764, reg-term: 0.000179}	valid={l1 mean: 0.286018, l1 median: 0.276309, l2 mean: 0.837641, l2 median: 0.744572, td_l1 mean: 0.014165, td_l1 median: 0.013384, td_l2 mean: 0.000661, td_l2 median: 0.000564, fir_l1 mean: 0.021575, fir_l1 median: 0.019343, log_l2 mean: 266.389525, log_l2 median: 191.093971}
+ [mixture]	Epoch 41 of 106 took 2.87m + 0.99m + 0.01m (finished in 4.2h)	train={loss: 0.013987, max-gradnorm: 0.010073, reg-term: 0.000180}	valid={l1 mean: 0.283720, l1 median: 0.273426, l2 mean: 0.842795, l2 median: 0.784960, td_l1 mean: 0.014196, td_l1 median: 0.013568, td_l2 mean: 0.000653, td_l2 median: 0.000583, fir_l1 mean: 0.021614, fir_l1 median: 0.019757, log_l2 mean: 265.075605, log_l2 median: 190.173302}
+ [mixture]	Epoch 42 of 106 took 2.87m + 0.98m + 0.01m (finished in 4.1h)	train={loss: 0.013840, max-gradnorm: 0.010152, reg-term: 0.000178}	valid={l1 mean: 0.275767, l1 median: 0.267283, l2 mean: 0.810546, l2 median: 0.756653, td_l1 mean: 0.013707, td_l1 median: 0.013168, td_l2 mean: 0.000625, td_l2 median: 0.000561, fir_l1 mean: 0.020902, fir_l1 median: 0.018931, log_l2 mean: 265.209253, log_l2 median: 189.985489}
+ [mixture]	Epoch 43 of 106 took 2.88m + 1.00m + 0.01m (finished in 4.1h)	train={loss: 0.013533, max-gradnorm: 0.005833, reg-term: 0.000175}	valid={l1 mean: 0.271883, l1 median: 0.265776, l2 mean: 0.776067, l2 median: 0.713694, td_l1 mean: 0.013561, td_l1 median: 0.013055, td_l2 mean: 0.000604, td_l2 median: 0.000538, fir_l1 mean: 0.020536, fir_l1 median: 0.018519, log_l2 mean: 255.758300, log_l2 median: 183.755104}
+ [mixture]	Epoch 44 of 106 took 2.88m + 1.00m + 0.01m (finished in 4.0h)	train={loss: 0.013574, max-gradnorm: 0.012646, reg-term: 0.000175}	valid={l1 mean: 0.273733, l1 median: 0.266175, l2 mean: 0.786002, l2 median: 0.712022, td_l1 mean: 0.013699, td_l1 median: 0.013202, td_l2 mean: 0.000611, td_l2 median: 0.000542, fir_l1 mean: 0.020720, fir_l1 median: 0.018876, log_l2 mean: 254.778537, log_l2 median: 183.570618}
+ [mixture]	Epoch 45 of 106 took 2.87m + 1.02m + 0.01m (finished in 4.0h)	train={loss: 0.013787, max-gradnorm: 0.011646, reg-term: 0.000175}	valid={l1 mean: 0.279485, l1 median: 0.268852, l2 mean: 0.829929, l2 median: 0.762889, td_l1 mean: 0.014098, td_l1 median: 0.013539, td_l2 mean: 0.000642, td_l2 median: 0.000572, fir_l1 mean: 0.021053, fir_l1 median: 0.019142, log_l2 mean: 256.387683, log_l2 median: 185.454453}
+ [mixture]	Epoch 46 of 106 took 2.87m + 1.04m + 0.01m (finished in 3.9h)	train={loss: 0.013986, max-gradnorm: 0.022529, reg-term: 0.000175}	valid={l1 mean: 0.285071, l1 median: 0.276363, l2 mean: 0.849560, l2 median: 0.752635, td_l1 mean: 0.014201, td_l1 median: 0.013540, td_l2 mean: 0.000665, td_l2 median: 0.000572, fir_l1 mean: 0.021376, fir_l1 median: 0.019265, log_l2 mean: 260.093030, log_l2 median: 186.574890}
+ [mixture]	Epoch 47 of 106 took 2.87m + 1.04m + 0.01m (finished in 3.9h)	train={loss: 0.014118, max-gradnorm: 0.006420, reg-term: 0.000175}	valid={l1 mean: 0.287247, l1 median: 0.278362, l2 mean: 0.862109, l2 median: 0.797375, td_l1 mean: 0.014367, td_l1 median: 0.013821, td_l2 mean: 0.000678, td_l2 median: 0.000621, fir_l1 mean: 0.021510, fir_l1 median: 0.019542, log_l2 mean: 256.578711, log_l2 median: 184.543549}
+ [mixture]	Epoch 48 of 106 took 2.87m + 1.04m + 0.01m (finished in 3.8h)	train={loss: 0.014133, max-gradnorm: 0.011046, reg-term: 0.000174}	valid={l1 mean: 0.280492, l1 median: 0.273624, l2 mean: 0.875430, l2 median: 0.810975, td_l1 mean: 0.014428, td_l1 median: 0.013843, td_l2 mean: 0.000683, td_l2 median: 0.000615, fir_l1 mean: 0.021380, fir_l1 median: 0.019439, log_l2 mean: 258.155696, log_l2 median: 185.812408}
+ [mixture]	Epoch 49 of 106 took 2.87m + 1.03m + 0.01m (finished in 3.7h)	train={loss: 0.013980, max-gradnorm: 0.007421, reg-term: 0.000173}	valid={l1 mean: 0.281340, l1 median: 0.274380, l2 mean: 0.882887, l2 median: 0.826490, td_l1 mean: 0.014354, td_l1 median: 0.013803, td_l2 mean: 0.000681, td_l2 median: 0.000609, fir_l1 mean: 0.021484, fir_l1 median: 0.019291, log_l2 mean: 257.119859, log_l2 median: 185.219765}
+ [mixture]	Epoch 50 of 106 took 2.87m + 1.04m + 0.01m (finished in 3.7h)	train={loss: 0.014018, max-gradnorm: 0.005930, reg-term: 0.000172}	valid={l1 mean: 0.279551, l1 median: 0.272078, l2 mean: 0.835073, l2 median: 0.725832, td_l1 mean: 0.013971, td_l1 median: 0.013306, td_l2 mean: 0.000649, td_l2 median: 0.000557, fir_l1 mean: 0.021266, fir_l1 median: 0.019121, log_l2 mean: 255.511303, log_l2 median: 183.745705}
+ [mixture]	Epoch 51 of 106 took 2.87m + 1.09m + 0.01m (finished in 3.6h)	train={loss: 0.013709, max-gradnorm: 0.008901, reg-term: 0.000170}	valid={l1 mean: 0.279394, l1 median: 0.271799, l2 mean: 0.855594, l2 median: 0.772273, td_l1 mean: 0.014153, td_l1 median: 0.013649, td_l2 mean: 0.000664, td_l2 median: 0.000586, fir_l1 mean: 0.021349, fir_l1 median: 0.019227, log_l2 mean: 255.844300, log_l2 median: 184.411087}
+ [mixture]	Epoch 52 of 106 took 2.87m + 1.07m + 0.01m (finished in 3.6h)	train={loss: 0.014019, max-gradnorm: 0.009251, reg-term: 0.000169}	valid={l1 mean: 0.278553, l1 median: 0.271468, l2 mean: 0.865309, l2 median: 0.811118, td_l1 mean: 0.014118, td_l1 median: 0.013651, td_l2 mean: 0.000667, td_l2 median: 0.000610, fir_l1 mean: 0.021424, fir_l1 median: 0.019335, log_l2 mean: 257.899206, log_l2 median: 185.831612}
+ [mixture]	Epoch 53 of 106 took 2.87m + 1.09m + 0.01m (finished in 3.5h)	train={loss: 0.013976, max-gradnorm: 0.008217, reg-term: 0.000168}	valid={l1 mean: 0.278684, l1 median: 0.272137, l2 mean: 0.841610, l2 median: 0.775327, td_l1 mean: 0.013991, td_l1 median: 0.013606, td_l2 mean: 0.000653, td_l2 median: 0.000588, fir_l1 mean: 0.021384, fir_l1 median: 0.019275, log_l2 mean: 253.843689, log_l2 median: 183.181808}
+ [mixture]	Epoch 54 of 106 took 2.87m + 1.39m + 0.01m (finished in 3.7h)	train={loss: 0.013687, max-gradnorm: 0.006966, reg-term: 0.000167}	valid={l1 mean: 0.274465, l1 median: 0.267812, l2 mean: 0.794511, l2 median: 0.689958, td_l1 mean: 0.013743, td_l1 median: 0.013074, td_l2 mean: 0.000621, td_l2 median: 0.000534, fir_l1 mean: 0.020941, fir_l1 median: 0.018594, log_l2 mean: 256.864298, log_l2 median: 185.190971}
+ [mixture]	Epoch 55 of 106 took 2.89m + 1.12m + 0.01m (finished in 3.4h)	train={loss: 0.013615, max-gradnorm: 0.010384, reg-term: 0.000166}	valid={l1 mean: 0.280128, l1 median: 0.270508, l2 mean: 0.804997, l2 median: 0.749534, td_l1 mean: 0.014000, td_l1 median: 0.013443, td_l2 mean: 0.000630, td_l2 median: 0.000575, fir_l1 mean: 0.021248, fir_l1 median: 0.019417, log_l2 mean: 259.121108, log_l2 median: 186.426697}
+ [mixture]	Epoch 56 of 106 took 2.87m + 1.17m + 0.01m (finished in 3.4h)	train={loss: 0.013807, max-gradnorm: 0.011341, reg-term: 0.000166}	valid={l1 mean: 0.282921, l1 median: 0.272061, l2 mean: 0.849336, l2 median: 0.780842, td_l1 mean: 0.014246, td_l1 median: 0.013609, td_l2 mean: 0.000659, td_l2 median: 0.000609, fir_l1 mean: 0.021399, fir_l1 median: 0.019534, log_l2 mean: 260.675546, log_l2 median: 186.813187}
+ [mixture]	Epoch 57 of 106 took 2.88m + 1.10m + 0.01m (finished in 3.3h)	train={loss: 0.013888, max-gradnorm: 0.013668, reg-term: 0.000166}	valid={l1 mean: 0.272843, l1 median: 0.264150, l2 mean: 0.833213, l2 median: 0.776973, td_l1 mean: 0.014003, td_l1 median: 0.013464, td_l2 mean: 0.000646, td_l2 median: 0.000583, fir_l1 mean: 0.021155, fir_l1 median: 0.019104, log_l2 mean: 254.713944, log_l2 median: 183.110100}
+ [mixture]	Epoch 58 of 106 took 2.87m + 1.05m + 0.01m (finished in 3.1h)	train={loss: 0.013944, max-gradnorm: 0.008018, reg-term: 0.000167}	valid={l1 mean: 0.278241, l1 median: 0.268057, l2 mean: 0.838402, l2 median: 0.772614, td_l1 mean: 0.014117, td_l1 median: 0.013429, td_l2 mean: 0.000658, td_l2 median: 0.000593, fir_l1 mean: 0.021354, fir_l1 median: 0.019138, log_l2 mean: 255.811267, log_l2 median: 183.744507}
+ [mixture]	Epoch 59 of 106 took 2.87m + 1.05m + 0.01m (finished in 3.1h)	train={loss: 0.014036, max-gradnorm: 0.007161, reg-term: 0.000168}	valid={l1 mean: 0.286648, l1 median: 0.275270, l2 mean: 0.841399, l2 median: 0.771814, td_l1 mean: 0.014299, td_l1 median: 0.013648, td_l2 mean: 0.000665, td_l2 median: 0.000595, fir_l1 mean: 0.021709, fir_l1 median: 0.019542, log_l2 mean: 255.038893, log_l2 median: 183.634590}
+ [mixture]	Epoch 60 of 106 took 2.87m + 1.04m + 0.01m (finished in 3.0h)	train={loss: 0.014103, max-gradnorm: 0.009106, reg-term: 0.000167}	valid={l1 mean: 0.281309, l1 median: 0.272155, l2 mean: 0.820674, l2 median: 0.712596, td_l1 mean: 0.014116, td_l1 median: 0.013309, td_l2 mean: 0.000647, td_l2 median: 0.000546, fir_l1 mean: 0.021412, fir_l1 median: 0.018828, log_l2 mean: 255.323606, log_l2 median: 183.732140}
+ [mixture]	Epoch 61 of 106 took 2.87m + 1.20m + 0.01m (finished in 3.1h)	train={loss: 0.014107, max-gradnorm: 0.005795, reg-term: 0.000167}	valid={l1 mean: 0.282456, l1 median: 0.272921, l2 mean: 0.848292, l2 median: 0.765723, td_l1 mean: 0.014270, td_l1 median: 0.013605, td_l2 mean: 0.000665, td_l2 median: 0.000584, fir_l1 mean: 0.021729, fir_l1 median: 0.019496, log_l2 mean: 256.963811, log_l2 median: 184.350296}
+ [mixture]	Epoch 62 of 106 took 2.98m + 1.03m + 0.01m (finished in 2.9h)	train={loss: 0.014090, max-gradnorm: 0.009028, reg-term: 0.000167}	valid={l1 mean: 0.280819, l1 median: 0.272581, l2 mean: 0.838346, l2 median: 0.762804, td_l1 mean: 0.014071, td_l1 median: 0.013512, td_l2 mean: 0.000656, td_l2 median: 0.000582, fir_l1 mean: 0.021565, fir_l1 median: 0.019484, log_l2 mean: 245.993756, log_l2 median: 176.509674}
+ [mixture]	Epoch 63 of 106 took 2.98m + 1.01m + 0.01m (finished in 2.9h)	train={loss: 0.013849, max-gradnorm: 0.006646, reg-term: 0.000167}	valid={l1 mean: 0.283072, l1 median: 0.274093, l2 mean: 0.849503, l2 median: 0.781880, td_l1 mean: 0.014144, td_l1 median: 0.013594, td_l2 mean: 0.000662, td_l2 median: 0.000596, fir_l1 mean: 0.021653, fir_l1 median: 0.019535, log_l2 mean: 245.569706, log_l2 median: 176.182938}
+ [mixture]	Epoch 64 of 106 took 2.98m + 1.02m + 0.01m (finished in 2.8h)	train={loss: 0.014063, max-gradnorm: 0.007902, reg-term: 0.000167}	valid={l1 mean: 0.287913, l1 median: 0.277744, l2 mean: 0.861822, l2 median: 0.789393, td_l1 mean: 0.014314, td_l1 median: 0.013761, td_l2 mean: 0.000671, td_l2 median: 0.000607, fir_l1 mean: 0.021886, fir_l1 median: 0.019683, log_l2 mean: 245.351065, log_l2 median: 175.953545}
+ [mixture]	Epoch 65 of 106 took 2.98m + 1.02m + 0.01m (finished in 2.7h)	train={loss: 0.014215, max-gradnorm: 0.005229, reg-term: 0.000167}	valid={l1 mean: 0.290249, l1 median: 0.278995, l2 mean: 0.875853, l2 median: 0.814083, td_l1 mean: 0.014404, td_l1 median: 0.013818, td_l2 mean: 0.000677, td_l2 median: 0.000626, fir_l1 mean: 0.021978, fir_l1 median: 0.019909, log_l2 mean: 244.494122, log_l2 median: 175.306168}
+ [mixture]	Epoch 66 of 106 took 2.98m + 0.99m + 0.01m (finished in 2.7h)	train={loss: 0.014437, max-gradnorm: 0.004540, reg-term: 0.000167}	valid={l1 mean: 0.292719, l1 median: 0.281886, l2 mean: 0.896661, l2 median: 0.836196, td_l1 mean: 0.014496, td_l1 median: 0.013937, td_l2 mean: 0.000690, td_l2 median: 0.000639, fir_l1 mean: 0.022099, fir_l1 median: 0.020105, log_l2 mean: 245.245847, log_l2 median: 176.358093}
+ [mixture]	Epoch 67 of 106 took 2.98m + 0.99m + 0.01m (finished in 2.6h)	train={loss: 0.014326, max-gradnorm: 0.005755, reg-term: 0.000167}	valid={l1 mean: 0.293635, l1 median: 0.284282, l2 mean: 0.893905, l2 median: 0.824240, td_l1 mean: 0.014447, td_l1 median: 0.013957, td_l2 mean: 0.000690, td_l2 median: 0.000628, fir_l1 mean: 0.022056, fir_l1 median: 0.020005, log_l2 mean: 246.748220, log_l2 median: 177.073112}
+ [mixture]	Epoch 68 of 106 took 2.98m + 0.99m + 0.01m (finished in 2.5h)	train={loss: 0.014517, max-gradnorm: 0.008496, reg-term: 0.000166}	valid={l1 mean: 0.291301, l1 median: 0.282855, l2 mean: 0.879743, l2 median: 0.818314, td_l1 mean: 0.014415, td_l1 median: 0.013956, td_l2 mean: 0.000682, td_l2 median: 0.000623, fir_l1 mean: 0.021895, fir_l1 median: 0.019967, log_l2 mean: 245.489490, log_l2 median: 176.042534}
+ [mixture]	Epoch 69 of 106 took 2.98m + 0.99m + 0.01m (finished in 2.5h)	train={loss: 0.014422, max-gradnorm: inf, reg-term: 0.000166}	valid={l1 mean: 0.293431, l1 median: 0.284606, l2 mean: 0.888685, l2 median: 0.826556, td_l1 mean: 0.014495, td_l1 median: 0.013946, td_l2 mean: 0.000688, td_l2 median: 0.000625, fir_l1 mean: 0.021972, fir_l1 median: 0.019841, log_l2 mean: 247.223419, log_l2 median: 177.084862}
+train.py:875: FutureWarning: Non-finite norm encountered in torch.nn.utils.clip_grad_norm_; continuing anyway. Note that the default behavior will change in a future release to error out if a non-finite total norm is encountered. At that point, setting error_if_nonfinite=false will be required to retain the old behavior.
+  config['GRAD_CLIP_NORM_TYPE']))
+ [mixture]	Epoch 70 of 106 took 2.98m + 1.01m + 0.01m (finished in 2.4h)	train={loss: 0.014295, max-gradnorm: 0.006060, reg-term: 0.000165}	valid={l1 mean: 0.293157, l1 median: 0.283431, l2 mean: 0.869958, l2 median: 0.803339, td_l1 mean: 0.014373, td_l1 median: 0.013846, td_l2 mean: 0.000675, td_l2 median: 0.000609, fir_l1 mean: 0.021873, fir_l1 median: 0.019670, log_l2 mean: 247.056707, log_l2 median: 176.564774}
+ [mixture]	Epoch 71 of 106 took 2.99m + 0.99m + 0.01m (finished in 2.3h)	train={loss: 0.014298, max-gradnorm: 0.006249, reg-term: 0.000165}	valid={l1 mean: 0.289912, l1 median: 0.280582, l2 mean: 0.852882, l2 median: 0.786125, td_l1 mean: 0.014268, td_l1 median: 0.013760, td_l2 mean: 0.000664, td_l2 median: 0.000598, fir_l1 mean: 0.021730, fir_l1 median: 0.019506, log_l2 mean: 247.500694, log_l2 median: 176.516502}
+ [mixture]	Epoch 72 of 106 took 2.98m + 1.02m + 0.01m (finished in 2.3h)	train={loss: 0.014141, max-gradnorm: 0.005732, reg-term: 0.000165}	valid={l1 mean: 0.286242, l1 median: 0.278351, l2 mean: 0.840482, l2 median: 0.783271, td_l1 mean: 0.014183, td_l1 median: 0.013736, td_l2 mean: 0.000653, td_l2 median: 0.000594, fir_l1 mean: 0.021535, fir_l1 median: 0.019395, log_l2 mean: 248.990524, log_l2 median: 178.603294}
+ [mixture]	Epoch 73 of 106 took 2.98m + 1.01m + 0.01m (finished in 2.2h)	train={loss: 0.014046, max-gradnorm: 0.007277, reg-term: 0.000165}	valid={l1 mean: 0.282990, l1 median: 0.275453, l2 mean: 0.825379, l2 median: 0.750584, td_l1 mean: 0.014046, td_l1 median: 0.013586, td_l2 mean: 0.000644, td_l2 median: 0.000574, fir_l1 mean: 0.021352, fir_l1 median: 0.019102, log_l2 mean: 247.810482, log_l2 median: 177.989090}
+ [mixture]	Epoch 74 of 106 took 2.98m + 1.00m + 0.01m (finished in 2.1h)	train={loss: 0.014095, max-gradnorm: 0.006650, reg-term: 0.000165}	valid={l1 mean: 0.285481, l1 median: 0.276193, l2 mean: 0.853582, l2 median: 0.798228, td_l1 mean: 0.014210, td_l1 median: 0.013700, td_l2 mean: 0.000659, td_l2 median: 0.000613, fir_l1 mean: 0.021525, fir_l1 median: 0.019473, log_l2 mean: 246.721063, log_l2 median: 176.480499}
+ [mixture]	Epoch 75 of 106 took 2.99m + 1.02m + 0.01m (finished in 2.1h)	train={loss: 0.014107, max-gradnorm: 0.006122, reg-term: 0.000165}	valid={l1 mean: 0.284115, l1 median: 0.275362, l2 mean: 0.843285, l2 median: 0.786812, td_l1 mean: 0.014153, td_l1 median: 0.013668, td_l2 mean: 0.000651, td_l2 median: 0.000592, fir_l1 mean: 0.021530, fir_l1 median: 0.019364, log_l2 mean: 247.222172, log_l2 median: 177.717735}
+ [mixture]	Epoch 76 of 106 took 2.97m + 1.03m + 0.01m (finished in 2.0h)	train={loss: 0.013942, max-gradnorm: 0.007379, reg-term: 0.000165}	valid={l1 mean: 0.283167, l1 median: 0.274464, l2 mean: 0.849888, l2 median: 0.787284, td_l1 mean: 0.014195, td_l1 median: 0.013607, td_l2 mean: 0.000654, td_l2 median: 0.000615, fir_l1 mean: 0.021484, fir_l1 median: 0.019546, log_l2 mean: 247.565789, log_l2 median: 177.509155}
+ [mixture]	Epoch 77 of 106 took 2.98m + 1.01m + 0.01m (finished in 1.9h)	train={loss: 0.014017, max-gradnorm: 0.006361, reg-term: 0.000165}	valid={l1 mean: 0.282734, l1 median: 0.273851, l2 mean: 0.852750, l2 median: 0.788039, td_l1 mean: 0.014232, td_l1 median: 0.013639, td_l2 mean: 0.000657, td_l2 median: 0.000615, fir_l1 mean: 0.021510, fir_l1 median: 0.019529, log_l2 mean: 247.353073, log_l2 median: 177.237991}
+ [mixture]	Epoch 78 of 106 took 2.99m + 1.00m + 0.01m (finished in 1.9h)	train={loss: 0.014049, max-gradnorm: 0.004993, reg-term: 0.000165}	valid={l1 mean: 0.279197, l1 median: 0.271000, l2 mean: 0.840475, l2 median: 0.778828, td_l1 mean: 0.014107, td_l1 median: 0.013565, td_l2 mean: 0.000648, td_l2 median: 0.000591, fir_l1 mean: 0.021386, fir_l1 median: 0.019346, log_l2 mean: 245.474793, log_l2 median: 176.195030}
+ [mixture]	Epoch 79 of 106 took 2.98m + 1.02m + 0.01m (finished in 1.8h)	train={loss: 0.013893, max-gradnorm: 0.005970, reg-term: 0.000166}	valid={l1 mean: 0.277584, l1 median: 0.269732, l2 mean: 0.825339, l2 median: 0.729460, td_l1 mean: 0.013973, td_l1 median: 0.013402, td_l2 mean: 0.000638, td_l2 median: 0.000559, fir_l1 mean: 0.021334, fir_l1 median: 0.019234, log_l2 mean: 246.908577, log_l2 median: 176.699417}
+ [mixture]	Epoch 80 of 106 took 2.99m + 1.02m + 0.01m (finished in 1.7h)	train={loss: 0.014000, max-gradnorm: 0.007993, reg-term: 0.000166}	valid={l1 mean: 0.279072, l1 median: 0.270700, l2 mean: 0.814467, l2 median: 0.710613, td_l1 mean: 0.013907, td_l1 median: 0.013161, td_l2 mean: 0.000632, td_l2 median: 0.000543, fir_l1 mean: 0.021310, fir_l1 median: 0.019099, log_l2 mean: 247.049167, log_l2 median: 177.513496}
+ [mixture]	Epoch 81 of 106 took 2.99m + 1.02m + 0.01m (finished in 1.7h)	train={loss: 0.013750, max-gradnorm: 0.005264, reg-term: 0.000166}	valid={l1 mean: 0.279266, l1 median: 0.270454, l2 mean: 0.801789, l2 median: 0.704835, td_l1 mean: 0.013826, td_l1 median: 0.013094, td_l2 mean: 0.000624, td_l2 median: 0.000539, fir_l1 mean: 0.021262, fir_l1 median: 0.019156, log_l2 mean: 246.515514, log_l2 median: 176.656067}
+ [mixture]	Epoch 82 of 106 took 2.99m + 1.00m + 0.01m (finished in 1.6h)	train={loss: 0.013595, max-gradnorm: 0.005925, reg-term: 0.000166}	valid={l1 mean: 0.278705, l1 median: 0.269866, l2 mean: 0.799488, l2 median: 0.701987, td_l1 mean: 0.013803, td_l1 median: 0.013055, td_l2 mean: 0.000622, td_l2 median: 0.000536, fir_l1 mean: 0.021224, fir_l1 median: 0.019088, log_l2 mean: 235.073878, log_l2 median: 168.557693}
+ [mixture]	Epoch 83 of 106 took 2.99m + 1.01m + 0.01m (finished in 1.5h)	train={loss: 0.013719, max-gradnorm: 0.004782, reg-term: 0.000166}	valid={l1 mean: 0.278403, l1 median: 0.269470, l2 mean: 0.798787, l2 median: 0.699475, td_l1 mean: 0.013801, td_l1 median: 0.013041, td_l2 mean: 0.000622, td_l2 median: 0.000535, fir_l1 mean: 0.021201, fir_l1 median: 0.019033, log_l2 mean: 234.245322, log_l2 median: 168.793549}
+ [mixture]	Epoch 84 of 106 took 2.98m + 1.01m + 0.01m (finished in 1.5h)	train={loss: 0.013780, max-gradnorm: 0.008234, reg-term: 0.000166}	valid={l1 mean: 0.278318, l1 median: 0.269147, l2 mean: 0.797090, l2 median: 0.697810, td_l1 mean: 0.013798, td_l1 median: 0.013039, td_l2 mean: 0.000621, td_l2 median: 0.000535, fir_l1 mean: 0.021181, fir_l1 median: 0.019002, log_l2 mean: 234.261515, log_l2 median: 167.850899}
+ [mixture]	Epoch 85 of 106 took 2.88m + 1.00m + 0.01m (finished in 1.4h)	train={loss: 0.013767, max-gradnorm: inf, reg-term: 0.000166}	valid={l1 mean: 0.278297, l1 median: 0.268959, l2 mean: 0.797200, l2 median: 0.695372, td_l1 mean: 0.013802, td_l1 median: 0.013042, td_l2 mean: 0.000621, td_l2 median: 0.000535, fir_l1 mean: 0.021172, fir_l1 median: 0.018975, log_l2 mean: 234.110537, log_l2 median: 168.653099}
+train.py:875: FutureWarning: Non-finite norm encountered in torch.nn.utils.clip_grad_norm_; continuing anyway. Note that the default behavior will change in a future release to error out if a non-finite total norm is encountered. At that point, setting error_if_nonfinite=false will be required to retain the old behavior.
+  config['GRAD_CLIP_NORM_TYPE']))
+ [mixture]	Epoch 86 of 106 took 2.88m + 1.12m + 0.01m (finished in 1.3h)	train={loss: 0.013809, max-gradnorm: 0.005366, reg-term: 0.000167}	valid={l1 mean: 0.278557, l1 median: 0.268948, l2 mean: 0.796534, l2 median: 0.693166, td_l1 mean: 0.013810, td_l1 median: 0.013047, td_l2 mean: 0.000622, td_l2 median: 0.000535, fir_l1 mean: 0.021177, fir_l1 median: 0.018965, log_l2 mean: 234.392055, log_l2 median: 166.980591}
+ [mixture]	Epoch 87 of 106 took 2.98m + 1.03m + 0.01m (finished in 1.3h)	train={loss: 0.013758, max-gradnorm: 0.004669, reg-term: 0.000167}	valid={l1 mean: 0.278909, l1 median: 0.269061, l2 mean: 0.798302, l2 median: 0.693177, td_l1 mean: 0.013824, td_l1 median: 0.013050, td_l2 mean: 0.000623, td_l2 median: 0.000536, fir_l1 mean: 0.021204, fir_l1 median: 0.018986, log_l2 mean: 234.475791, log_l2 median: 168.191566}
+ [mixture]	Epoch 88 of 106 took 2.99m + 1.02m + 0.01m (finished in 1.2h)	train={loss: 0.013725, max-gradnorm: 0.004467, reg-term: 0.000167}	valid={l1 mean: 0.279281, l1 median: 0.269255, l2 mean: 0.800349, l2 median: 0.693483, td_l1 mean: 0.013842, td_l1 median: 0.013058, td_l2 mean: 0.000625, td_l2 median: 0.000536, fir_l1 mean: 0.021232, fir_l1 median: 0.019004, log_l2 mean: 234.423576, log_l2 median: 168.276863}
+ [mixture]	Epoch 89 of 106 took 2.99m + 1.01m + 0.01m (finished in 1.1h)	train={loss: 0.013790, max-gradnorm: 0.004972, reg-term: 0.000167}	valid={l1 mean: 0.279590, l1 median: 0.269465, l2 mean: 0.802442, l2 median: 0.697626, td_l1 mean: 0.013849, td_l1 median: 0.013076, td_l2 mean: 0.000626, td_l2 median: 0.000538, fir_l1 mean: 0.021252, fir_l1 median: 0.019040, log_l2 mean: 235.137356, log_l2 median: 169.361198}
+ [mixture]	Epoch 90 of 106 took 2.99m + 1.00m + 0.01m (finished in 1.1h)	train={loss: 0.013766, max-gradnorm: 0.005681, reg-term: 0.000167}	valid={l1 mean: 0.280040, l1 median: 0.269626, l2 mean: 0.803735, l2 median: 0.704813, td_l1 mean: 0.013870, td_l1 median: 0.013171, td_l2 mean: 0.000627, td_l2 median: 0.000543, fir_l1 mean: 0.021280, fir_l1 median: 0.019132, log_l2 mean: 235.710999, log_l2 median: 169.781105}
+ [mixture]	Epoch 91 of 106 took 2.98m + 1.00m + 0.01m (finished in 1.0h)	train={loss: 0.013876, max-gradnorm: 0.004745, reg-term: 0.000167}	valid={l1 mean: 0.279970, l1 median: 0.269767, l2 mean: 0.801114, l2 median: 0.684618, td_l1 mean: 0.013852, td_l1 median: 0.013036, td_l2 mean: 0.000626, td_l2 median: 0.000533, fir_l1 mean: 0.021268, fir_l1 median: 0.018964, log_l2 mean: 236.343711, log_l2 median: 170.890747}
+ [mixture]	Epoch 92 of 106 took 2.98m + 1.00m + 0.01m (finished in 0.9h)	train={loss: 0.013770, max-gradnorm: inf, reg-term: 0.000167}	valid={l1 mean: 0.279917, l1 median: 0.269836, l2 mean: 0.800751, l2 median: 0.680476, td_l1 mean: 0.013847, td_l1 median: 0.012994, td_l2 mean: 0.000626, td_l2 median: 0.000531, fir_l1 mean: 0.021268, fir_l1 median: 0.018942, log_l2 mean: 225.023355, log_l2 median: 158.446045}
+train.py:875: FutureWarning: Non-finite norm encountered in torch.nn.utils.clip_grad_norm_; continuing anyway. Note that the default behavior will change in a future release to error out if a non-finite total norm is encountered. At that point, setting error_if_nonfinite=false will be required to retain the old behavior.
+  config['GRAD_CLIP_NORM_TYPE']))
+ [mixture]	Epoch 93 of 106 took 2.98m + 1.01m + 0.01m (finished in 0.9h)	train={loss: 0.013851, max-gradnorm: 0.004105, reg-term: 0.000167}	valid={l1 mean: 0.279985, l1 median: 0.269878, l2 mean: 0.800544, l2 median: 0.679128, td_l1 mean: 0.013847, td_l1 median: 0.012972, td_l2 mean: 0.000626, td_l2 median: 0.000530, fir_l1 mean: 0.021272, fir_l1 median: 0.018935, log_l2 mean: 224.213016, log_l2 median: 155.599182}
+ [mixture]	Epoch 94 of 106 took 2.98m + 1.02m + 0.01m (finished in 0.8h)	train={loss: 0.013699, max-gradnorm: 0.005690, reg-term: 0.000167}	valid={l1 mean: 0.280059, l1 median: 0.269935, l2 mean: 0.800291, l2 median: 0.677616, td_l1 mean: 0.013844, td_l1 median: 0.012954, td_l2 mean: 0.000626, td_l2 median: 0.000528, fir_l1 mean: 0.021280, fir_l1 median: 0.018939, log_l2 mean: 224.925238, log_l2 median: 159.055176}
+ [mixture]	Epoch 95 of 106 took 2.98m + 1.00m + 0.01m (finished in 0.7h)	train={loss: 0.013612, max-gradnorm: 0.005704, reg-term: 0.000167}	valid={l1 mean: 0.280034, l1 median: 0.269959, l2 mean: 0.799869, l2 median: 0.675912, td_l1 mean: 0.013840, td_l1 median: 0.012941, td_l2 mean: 0.000625, td_l2 median: 0.000528, fir_l1 mean: 0.021279, fir_l1 median: 0.018940, log_l2 mean: 225.516327, log_l2 median: 160.903625}
+ [mixture]	Epoch 96 of 106 took 2.98m + 1.01m + 0.01m (finished in 0.7h)	train={loss: 0.013744, max-gradnorm: 0.009101, reg-term: 0.000167}	valid={l1 mean: 0.280209, l1 median: 0.270121, l2 mean: 0.800237, l2 median: 0.675154, td_l1 mean: 0.013843, td_l1 median: 0.012931, td_l2 mean: 0.000625, td_l2 median: 0.000527, fir_l1 mean: 0.021288, fir_l1 median: 0.018948, log_l2 mean: 222.813399, log_l2 median: 149.686111}
+ [mixture]	Epoch 97 of 106 took 2.98m + 1.01m + 0.01m (finished in 0.6h)	train={loss: 0.013867, max-gradnorm: 0.009157, reg-term: 0.000167}	valid={l1 mean: 0.280305, l1 median: 0.270154, l2 mean: 0.800413, l2 median: 0.675707, td_l1 mean: 0.013847, td_l1 median: 0.012938, td_l2 mean: 0.000625, td_l2 median: 0.000527, fir_l1 mean: 0.021293, fir_l1 median: 0.018958, log_l2 mean: 223.651948, log_l2 median: 152.182808}
+ [mixture]	Epoch 98 of 106 took 2.97m + 1.00m + 0.01m (finished in 0.5h)	train={loss: 0.013750, max-gradnorm: 0.005141, reg-term: 0.000167}	valid={l1 mean: 0.280556, l1 median: 0.270355, l2 mean: 0.800417, l2 median: 0.676954, td_l1 mean: 0.013855, td_l1 median: 0.012961, td_l2 mean: 0.000626, td_l2 median: 0.000528, fir_l1 mean: 0.021301, fir_l1 median: 0.018987, log_l2 mean: 224.263446, log_l2 median: 158.084160}
+ [mixture]	Epoch 99 of 106 took 2.98m + 1.02m + 0.01m (finished in 0.5h)	train={loss: 0.013800, max-gradnorm: inf, reg-term: 0.000167}	valid={l1 mean: 0.280706, l1 median: 0.270476, l2 mean: 0.800567, l2 median: 0.678123, td_l1 mean: 0.013858, td_l1 median: 0.012981, td_l2 mean: 0.000626, td_l2 median: 0.000529, fir_l1 mean: 0.021304, fir_l1 median: 0.019015, log_l2 mean: 225.639623, log_l2 median: 157.893044}
+train.py:875: FutureWarning: Non-finite norm encountered in torch.nn.utils.clip_grad_norm_; continuing anyway. Note that the default behavior will change in a future release to error out if a non-finite total norm is encountered. At that point, setting error_if_nonfinite=false will be required to retain the old behavior.
+  config['GRAD_CLIP_NORM_TYPE']))
+ [mixture]	Epoch 100 of 106 took 2.98m + 1.01m + 0.01m (finished in 0.4h)	train={loss: 0.013835, max-gradnorm: 0.008353, reg-term: 0.000167}	valid={l1 mean: 0.280866, l1 median: 0.270708, l2 mean: 0.800831, l2 median: 0.679733, td_l1 mean: 0.013862, td_l1 median: 0.012999, td_l2 mean: 0.000626, td_l2 median: 0.000530, fir_l1 mean: 0.021308, fir_l1 median: 0.019037, log_l2 mean: 221.615627, log_l2 median: 142.863976}
+ [mixture]	Epoch 101 of 106 took 2.98m + 1.00m + 0.01m (finished in 0.3h)	train={loss: 0.013744, max-gradnorm: 0.005090, reg-term: 0.000167}	valid={l1 mean: 0.281105, l1 median: 0.271022, l2 mean: 0.801039, l2 median: 0.682305, td_l1 mean: 0.013869, td_l1 median: 0.013025, td_l2 mean: 0.000626, td_l2 median: 0.000531, fir_l1 mean: 0.021312, fir_l1 median: 0.019063, log_l2 mean: 226.445445, log_l2 median: 160.151421}
+ [mixture]	Epoch 102 of 106 took 2.98m + 1.01m + 0.01m (finished in 0.3h)	train={loss: 0.013918, max-gradnorm: 0.010792, reg-term: 0.000167}	valid={l1 mean: 0.281117, l1 median: 0.271045, l2 mean: 0.801229, l2 median: 0.682864, td_l1 mean: 0.013871, td_l1 median: 0.013027, td_l2 mean: 0.000626, td_l2 median: 0.000531, fir_l1 mean: 0.021312, fir_l1 median: 0.019066, log_l2 mean: 210.757015, log_l2 median: 132.634666}
+ [mixture]	Epoch 103 of 106 took 2.98m + 0.99m + 0.01m (finished in 0.2h)	train={loss: 0.013832, max-gradnorm: inf, reg-term: 0.000167}	valid={l1 mean: 0.281127, l1 median: 0.271043, l2 mean: 0.801379, l2 median: 0.683070, td_l1 mean: 0.013872, td_l1 median: 0.013029, td_l2 mean: 0.000626, td_l2 median: 0.000531, fir_l1 mean: 0.021313, fir_l1 median: 0.019069, log_l2 mean: 205.113276, log_l2 median: 125.302769}
+train.py:875: FutureWarning: Non-finite norm encountered in torch.nn.utils.clip_grad_norm_; continuing anyway. Note that the default behavior will change in a future release to error out if a non-finite total norm is encountered. At that point, setting error_if_nonfinite=false will be required to retain the old behavior.
+  config['GRAD_CLIP_NORM_TYPE']))
+ [mixture]	Epoch 104 of 106 took 2.98m + 0.99m + 0.01m (finished in 0.1h)	train={loss: 0.013872, max-gradnorm: 0.004212, reg-term: 0.000167}	valid={l1 mean: 0.281160, l1 median: 0.271106, l2 mean: 0.801500, l2 median: 0.683499, td_l1 mean: 0.013873, td_l1 median: 0.013032, td_l2 mean: 0.000626, td_l2 median: 0.000531, fir_l1 mean: 0.021315, fir_l1 median: 0.019074, log_l2 mean: 204.681951, log_l2 median: 125.221851}
+ [mixture]	Epoch 105 of 106 took 2.97m + 1.01m + 0.01m (finished in 0.1h)	train={loss: 0.013784, max-gradnorm: 0.010152, reg-term: 0.000167}	valid={l1 mean: 0.281193, l1 median: 0.271134, l2 mean: 0.801605, l2 median: 0.683547, td_l1 mean: 0.013874, td_l1 median: 0.013033, td_l2 mean: 0.000626, td_l2 median: 0.000531, fir_l1 mean: 0.021317, fir_l1 median: 0.019079, log_l2 mean: 203.298699, log_l2 median: 124.473118}
+ [mixture]	Epoch 106 of 106 took 2.98m + 0.99m + 0.01m (finished in 0.0h)	train={loss: 0.013933, max-gradnorm: 0.010037, reg-term: 0.000167}	valid={l1 mean: 0.281220, l1 median: 0.271168, l2 mean: 0.801724, l2 median: 0.683988, td_l1 mean: 0.013876, td_l1 median: 0.013036, td_l2 mean: 0.000626, td_l2 median: 0.000532, fir_l1 mean: 0.021319, fir_l1 median: 0.019085, log_l2 mean: 202.738819, log_l2 median: 124.092495}

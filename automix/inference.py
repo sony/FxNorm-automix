@@ -24,7 +24,7 @@ from automix.common_dataprocessing import create_dataset_mixing, create_minibatc
 from automix.common_supernet import SuperNet
 from automix import utils
 
-from automix.utils_data_normalization import get_comp_matching, get_eq_matching, get_mean_peak
+from automix.utils_data_normalization import get_comp_matching, get_eq_matching, get_mean_peak, lufs_normalize
 from automix.utils_data_normalization import get_panning_matching, get_SPS, amp_to_db, get_reverb_send
 
 from multiprocessing.pool import ThreadPool, Pool
@@ -33,12 +33,16 @@ from pymixconsole.parameter import Parameter
 from pymixconsole.parameter_list import ParameterList
 
 import functools
+import time
 
 
 
 # Cosntants for effect-normalization preprocessing
 
 EFFECTS = ['prereverb', 'reverb', 'eq', 'compression', 'panning', 'loudness']
+
+# Compute datapreprocessing, False if stems have already been preprocessed
+COMPUTE_NORMALIZATION = True
 
 # General Settings
 CPU_COUNT = 4
@@ -106,12 +110,7 @@ EQ_PARAMETERS.add(Parameter('low_shelf_gain', eq_gain, 'float', minimum=eq_gain,
 EQ_PARAMETERS.add(Parameter('low_shelf_freq', 600.0, 'float', minimum=500.0, maximum=700.0))
 EQ_PARAMETERS.add(Parameter('high_shelf_gain', eq_gain, 'float', minimum=eq_gain, maximum=eq_gain))
 EQ_PARAMETERS.add(Parameter('high_shelf_freq', 8500.0, 'float', minimum=7000.0, maximum=10000.0))
-EQ_PARAMETERS.add(Parameter('first_band_gain', eq_gain, 'float', minimum=eq_gain, maximum=eq_gain)) #first_band only applies to drums.
-EQ_PARAMETERS.add(Parameter('first_band_freq', 100.0, 'float', minimum=100.0, maximum=100.0))
-EQ_PARAMETERS.add(Parameter('first_band_q', 0.7, 'float', minimum=0.7, maximum=0.7))
-
 EQ_BANDS_VOCALS_OTHER = ['low_shelf', 'high_shelf']
-EQ_BANDS_DRUMS = ['low_shelf', 'first_band', 'high_shelf']
 
 # PRE-REVERB (FOR REAL DRY INPUT)
 PRE_REVERB_PARAMETERS = ParameterList()
@@ -125,7 +124,7 @@ PRE_REVERB_PROBABILITY = 1.0
 PRE_FX_PARALLEL = False
 PRE_FX_SHUFFLE = False
 
-# RV1 Conv Reverb
+# REVERB AUGMENTATION 
 REVERB_PARAMETERS = ParameterList()
 REVERB_PARAMETERS.add(Parameter('wet', 1.0, 'float', minimum=1.0, maximum=1.0))
 REVERB_PARAMETERS.add(Parameter('dry', 0.0, 'float', minimum=0.0, maximum=0.0))
@@ -138,9 +137,7 @@ FX_PARALLEL = True
 FX_SHUFFLE = False
     
 
-
-
-def normalize_audio(args_):
+def normalize_audio_wave(args_):
     """
     Effect Normalizes audio input
 
@@ -243,43 +240,41 @@ def normalize_audio(args_):
 
 
                 elif effect == 'loudness':
-                    output_audio = utils.lufs_normalize(output_audio, SR, features_mean[effect][src]) 
+                    output_audio = lufs_normalize(output_audio, SR, features_mean[effect][src]) 
                     
                 elif effect == 'reverb':
                     
-#                     Uncomment when reverb augmentation is supported for drums
-#                     if src == 'drums': 
-#                         bands = EQ_BANDS_DRUMS
-#                     else:
-#                         bands = EQ_BANDS_VOCALS_OTHER
-                    bands = EQ_BANDS_VOCALS_OTHER
-                    
-                    audio_reverb_send = get_reverb_send(output_audio, EQ_PARAMETERS, REVERB_PARAMETERS, IR,
-                                                        bands=bands,
-                                                        eq_prob=EQ_PROBABILITY, rv_prob=REVERB_PROBABILITY,
-                                                        parallel=FX_PARALLEL,
-                                                        shuffle=FX_SHUFFLE,
-                                                        sr=SR)
+                    if src in ['bass', 'drums']: 
+                        pass
+                    else:
+                        bands = EQ_BANDS_VOCALS_OTHER
 
-                    
-                    np.copyto(output_audio, audio_reverb_send)
+                        audio_reverb_send = get_reverb_send(output_audio, EQ_PARAMETERS, REVERB_PARAMETERS, IR,
+                                                            bands=bands,
+                                                            eq_prob=EQ_PROBABILITY, rv_prob=REVERB_PROBABILITY,
+                                                            parallel=FX_PARALLEL,
+                                                            shuffle=FX_SHUFFLE,
+                                                            sr=SR)
+
+
+                        np.copyto(output_audio, audio_reverb_send)
                     
                 elif effect == 'prereverb':
                     
-                    if src == 'drums':
-                        bands = EQ_BANDS_DRUMS
+                    if src in ['bass', 'drums']: 
+                        pass
                     else:
                         bands = EQ_BANDS_VOCALS_OTHER
                     
-                    audio_reverb_send = get_reverb_send(output_audio, EQ_PARAMETERS, PRE_REVERB_PARAMETERS, PRE_IR,
-                                                        bands=bands,
-                                                        eq_prob=PRE_EQ_PROBABILITY, rv_prob=PRE_REVERB_PROBABILITY,
-                                                        parallel=PRE_FX_PARALLEL,
-                                                        shuffle=PRE_FX_SHUFFLE,
-                                                        sr=SR)
+                        audio_reverb_send = get_reverb_send(output_audio, EQ_PARAMETERS, PRE_REVERB_PARAMETERS, PRE_IR,
+                                                            bands=bands,
+                                                            eq_prob=PRE_EQ_PROBABILITY, rv_prob=PRE_REVERB_PROBABILITY,
+                                                            parallel=PRE_FX_PARALLEL,
+                                                            shuffle=PRE_FX_SHUFFLE,
+                                                            sr=SR)
 
-                    
-                    np.copyto(output_audio, audio_reverb_send)
+
+                        np.copyto(output_audio, audio_reverb_send)
 
         output_audio = output_audio[FFT_SIZE:FFT_SIZE+audio.shape[0]]
 
@@ -334,7 +329,7 @@ if __name__ == '__main__':
                         default=None, help='Path to other')
 
     parser.add_argument('--training-params', type=str,
-                        required=True, help='Path to training parameters and audio settings')
+                        default=None, help='Path to training parameters and audio settings')
     
     parser.add_argument('--impulse-responses', type=str,
                         default=None, help='Path to folder with impulse responses')
@@ -355,16 +350,14 @@ if __name__ == '__main__':
     
     parser.add_argument('--features', type=str,
                         help='File with effect normalization features',
-                        default=None)
+                        required=True)
     
     parser.add_argument('--baseline-sum', type=bool,
                         help='Boolean flag to output baseline sum of stems',
                         default=False)
+    
+    start_time = time.time()
 
-    parser.add_argument('--wav-format', type=str,
-                        help='Store WAV files with separations in specified format. '
-                             + 'If not specified, then we store in the same format as the input WAV file.',
-                        default=None, choices=['np.int16', 'np.int32'])
 
     args = parser.parse_args()
     
@@ -392,23 +385,21 @@ if __name__ == '__main__':
     if None in [features_path, weights, config_file] or baseline_sum:
         baseline_sum = True
         print('Processing sum of input stems...')
-    
-
-    # Loads model info
-    uprint(f'Loading configuration from {config_file}')
-    exec(open(config_file).read())
-
-    n_channels = config['N_CHANNELS']
-    accepted_sampling_rates = config['ACCEPTED_SAMPLING_RATES']
-    SR = min(accepted_sampling_rates)
-    seq_length_td = config['TRAINING_SEQ_LENGTH']
-    # Samples to pad at the start of the stems (to start LSTM states)
-    pad_samples = 30*SR # None if we don't want to pad samples 
-    STEMS = []
-    for i in config['INPUTS']:
-        STEMS.append(i.split('_')[0])
 
     if baseline_sum == False:
+        
+        # Loads model info
+        uprint(f'Loading configuration from {config_file}')
+        exec(open(config_file).read())
+
+        n_channels = config['N_CHANNELS']
+        accepted_sampling_rates = config['ACCEPTED_SAMPLING_RATES']
+        SR = min(accepted_sampling_rates)
+        # Samples to pad at the start of the stems (to start LSTM states)
+        pad_samples = 30*SR # None if we don't want to pad samples 
+        STEMS = []
+        for i in config['INPUTS']:
+            STEMS.append(i.split('_')[0])
         
         net = torch.load(args.nets)
         net.load_state_dict(torch.load(weights, map_location=lambda storage, loc: storage))
@@ -435,6 +426,15 @@ if __name__ == '__main__':
 
         if config['QUANTIZATION_OP'] is not None:
             super_net.quantize(config['QUANTIZATION_OP'], config['QUANTIZATION_BW'])
+            
+    else:
+        
+        n_channels = 2
+        accepted_sampling_rates = [44100, 48000]
+        SR = min(accepted_sampling_rates)
+        # Samples to pad at the start of the stems (to start LSTM states)
+        pad_samples = None # None if we don't want to pad samples 
+        STEMS = ['vocals', 'bass', 'drums', 'other']
     
     # Loads stems
     uprint('Loading stems...')
@@ -507,8 +507,8 @@ if __name__ == '__main__':
     max_samples = max(samples)
     max_samplingrate = max(samplingrate)
     max_subtype = max(subtype)
-    data = np.zeros((len(config['INPUTS']), 1,
-                            max_samples, config['N_CHANNELS']),
+    data = np.zeros((len(STEMS), 1,
+                            max_samples, n_channels),
                             dtype=np.float32)  # (1 + S)xB=1xTxC
     stems = {}
     for k, inp in enumerate(STEMS):
@@ -522,36 +522,38 @@ if __name__ == '__main__':
             data[k] = zeros_[:max_samples]
         else:
             data[k] = stems[inp][:max_samples]
-
-    new_samples = (1 + max_samples//config['KERNEL_SIZE_ENCODER'])*config['KERNEL_SIZE_ENCODER']
-    data = np.pad(data,[(0,0), (0,0), (0,new_samples-max_samples), (0,0)])
-
+    
     if baseline_sum == False:
-        
-        # Loading Impuse Responses
-        
-        # PRE-REVERB
-        if ir_path['prereverb']:
-            PRE_IR = []
-            PRE_IR.extend(create_dataset(path=ir_path['prereverb'],
-                                                    accepted_sampling_rates=[SR],
-                                                    sources=['impulse_response'],
-                                                    mapped_sources={}, load_to_memory=True, debug=False)[0])
-            PRE_REVERB_PARAMETERS.add(Parameter('index', 0, 'int', minimum=0, maximum=len(PRE_IR)))
-        else:
-            EFFECTS.remove('prereverb')
+        new_samples = (1 + max_samples//config['KERNEL_SIZE_ENCODER'])*config['KERNEL_SIZE_ENCODER']
+        data = np.pad(data,[(0,0), (0,0), (0,new_samples-max_samples), (0,0)])
 
-        # Conv Reverb
-        if ir_path['reverb']:
-            IR = []
-            IR.extend(create_dataset(path=ir_path['reverb'],
-                                                    accepted_sampling_rates=[SR],
-                                                    sources=['impulse_response'],
-                                                    mapped_sources={}, load_to_memory=True, debug=False)[0])
-            REVERB_PARAMETERS.add(Parameter('index', 0, 'int', minimum=0, maximum=len(IR)))
-        else:
-            EFFECTS.remove('reverb')
+    
         
+    # Loading Impuse Responses
+
+    # PRE-REVERB
+    if ir_path['prereverb']:
+        PRE_IR = []
+        PRE_IR.extend(create_dataset(path=ir_path['prereverb'],
+                                                accepted_sampling_rates=[SR],
+                                                sources=['impulse_response'],
+                                                mapped_sources={}, load_to_memory=True, debug=False)[0])
+        PRE_REVERB_PARAMETERS.add(Parameter('index', 0, 'int', minimum=0, maximum=len(PRE_IR)))
+    else:
+        EFFECTS.remove('prereverb')
+
+    # Conv Reverb
+    if ir_path['reverb']:
+        IR = []
+        IR.extend(create_dataset(path=ir_path['reverb'],
+                                                accepted_sampling_rates=[SR],
+                                                sources=['impulse_response'],
+                                                mapped_sources={}, load_to_memory=True, debug=False)[0])
+        REVERB_PARAMETERS.add(Parameter('index', 0, 'int', minimum=0, maximum=len(IR)))
+    else:
+        EFFECTS.remove('reverb')
+        
+    if COMPUTE_NORMALIZATION:
         # Applies effect normalization
         features_mean = np.load(features_path, allow_pickle='TRUE')[()]
         features_mean = smooth_feature(features_mean)
@@ -561,10 +563,12 @@ if __name__ == '__main__':
             _func_args.append((data[k][0], EFFECTS, inp, features_mean))
 
         pool = Pool(CPU_COUNT)
-        output_audio = pool.map(normalize_audio, _func_args)
+        output_audio = pool.map(normalize_audio_wave, _func_args)
 
         for k, inp in enumerate(STEMS):
             data[k][0] = output_audio[k]
+            
+    if baseline_sum == False:
 
         # Runs model and saves output audio
         test_data = torch.from_numpy(data)
@@ -603,8 +607,12 @@ if __name__ == '__main__':
             audio_out = librosa.resample(audio_out.T, SR, max_samplingrate, res_type='kaiser_best').T
         save_wav(output_name, max_samplingrate, audio_out, subtype=max_subtype)
 
-
-        
+t = (time.time() - start_time)
+t = '{:.2f}'.format(t)
+length = max_samples/max_samplingrate
+length = '{:.2f}'.format(length)
+print(f'--- It took {t} seconds ---')
+print(f'--- to mix {length} seconds ---')
 
 
 
