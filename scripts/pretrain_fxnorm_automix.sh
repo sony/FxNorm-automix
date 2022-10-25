@@ -13,10 +13,10 @@ export CUDA_VISIBLE_DEVICES=0
 export OMP_NUM_THREADS=1
 
 # set folder suffix 
-export FOLDER_SUFFIX="pretrain" # Example of training naming 
+export FOLDER_SUFFIX="ours_S_pretrained" # Example of training naming 
 
 # describe experiment (optional)
-export DESCRIPTION="pretrain"
+export DESCRIPTION="ours_S_pretrained"
 
 # MODELS_FOLDER="../trainings/results"
 # NET='ours_pretrained' # pretrain weights

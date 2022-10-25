@@ -19,7 +19,7 @@ export FOLDER_SUFFIX="ours_S_Lb" # Example of training naming
 export DESCRIPTION="ours_S_Lb"
 
 MODELS_FOLDER="../trainings/results"
-NET='ours_pretrained' # pretrain weights
+NET='ours_S_pretrained' # pretrain weights
 
 # train network 
 python ../automix/train.py ${CONFIGS_FOLDER}/${FOLDER_SUFFIX}.py \

@@ -88,7 +88,7 @@ This script runs inference on a given multitrack
 
 Trained models can be found at `training/results` and their `config.py` files at `configs/ISMIR`
 
-The available models are *ours_S_La*, *ours_S_Lb*, *ours_S(pretrained)*, and *wun_S_Lb*
+The available models are *ours_S_La*, *ours_S_Lb*, *ours_S_pretrained*, and *wun_S_Lb*
 
 ## Computed features
 
