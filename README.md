@@ -32,10 +32,17 @@ ArXiv Paper: https://arxiv.org/abs/2208.11428
   pip install -r requirements.txt
 ```
 
+## Data preprocessing - Effect Normalization
+
+This script computes the average features for the training dataset, then normalizes the train and validation partitions.
+
+```
+  bash scripts/data_normalization.sh
+```   
 
 ## Training models
 
-The following scripts train FxNorm-Automix (Ours) and Wave-U-Net (WUN) models
+The following scripts train FxNorm-Automix (Ours) and Wave-U-Net (WUN) models. Check `config.py` files at `configs/ISMIR` for hyperparameters and dataset settings
 
 ### Pre-train FXNorm-automix
 
@@ -87,12 +94,16 @@ The available models are *ours_S_La*, *ours_S_Lb*, *ours_S(pretrained)*, and *wu
 
 The average features computed on MUSDB18 can be found at `training/features/features_MUSDB18.npy`
 
-## Data preprocessing
+                 
 
-```
-  automix/data_normalization.py
-```                    
+## Impulse Responses (IR)
 
+Due to copyright issues, the IRs used during training, evaluation and inference of our models cannot be made public.
+
+However, users can provide their IRs for data augmentation. Ideally, the reverberation time (RT) of the IRs should be between 2 and 4 seconds. For "pre-reverb" IRs (when doing inference on real dry data), RT should be less than 1.5 seconds. (Stereo and Mono are supported)
+
+The data loader expects each IR to be in an individual folder and named impulse_response.wav
+e.g. /path/to/IR/impulse-response-001/impulse_response.wav 
 
 ## Requirements
 

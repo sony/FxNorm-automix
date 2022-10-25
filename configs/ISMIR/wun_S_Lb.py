@@ -19,10 +19,10 @@ config['CALCULATE_STATISTICS'] = True
 
 config['OUTPUTS'] = ['mixture']
 
-config['INPUTS'] = ['vocals',
-                    'bass',
-                    'drums', 
-                    'other']
+config['INPUTS'] = ['vocals_normalized',
+                    'bass_normalized',
+                    'drums_normalized', 
+                    'other_normalized'] # Must follow names of normalized wav files. e.g.vocals_normalized.wav
 
 # list of all sources (used for creating mixture)
 config['SOURCES'] = config['INPUTS'] + config['OUTPUTS']
@@ -242,3 +242,4 @@ config['DATA_DIR_TRAIN'].append(('/data/martinez/audio/automix/MUSDB18/train', F
 config['DATA_DIR_VALID'] = []
 config['DATA_DIR_VALID'].append(('/data/martinez/audio/automix/MUSDB18/val', False))
 
+# The stems in the MUSDB18 are expected to be named vocals_normalized.wav, bass_normalized.wav, drums_normalized.wav, other_normalized.wav and mixture.wav

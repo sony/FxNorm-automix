@@ -5,12 +5,9 @@ import time
 import numpy as np
 import scipy
 import pathlib
-import librosa
 import pyloudnorm as pyln
-
+import argparse
 sys.setrecursionlimit(int(1e6))
-
-import sklearn
 
 from automix.common_dataprocessing import load_wav, save_wav, create_dataset
 from automix.common_miscellaneous import compute_stft, compute_istft
@@ -19,8 +16,6 @@ from automix import utils
 from multiprocessing import Pool, cpu_count
 from multiprocessing.pool import ThreadPool, Pool
 from collections import OrderedDict
-
-import soundfile as sf
 
 import time
 
@@ -31,22 +26,15 @@ from pymixconsole.parameter import Parameter
 from pymixconsole.parameter_list import ParameterList
 
 
-PATH_DATASET = '/data/martinez/audio/automix/TencyDB/train' # Folder that contains dataset to be normalized
-PATH_FEATURES = '/data/martinez/audio/automix/TencyDB_features++' # Folder that contains average features files
-FILE_NAME = 'rv1v0off_eq_comp_noexp_pan_frames_vol' # Prefix to name normalized audio
-NAME_FEATURES = 'features_mean_v3' # Name of feature file to be loaded or to be created
-STEMS = ['vocals','drums', 'bass', 'other'] # Stems to be normalized
+STEMS = ['vocals', 'drums', 'bass', 'other'] # Stems to be normalized
 EFFECTS = ['reverb', 'eq', 'compression', 'panning', 'loudness'] # Effects to be normalized, order matters
-CPU_COUNT = cpu_count()//2
-
-LOAD_MEAN = True # IF average features are loaded. If false, features are calculated and file is saved
-NORM_AUDIO = True # If audio should be normalized. If false only features calculated.
 
 # Audio settings
 SR = 44100
-SUBTYPE = 'PCM_16'
 
 # General Settings
+CPU_COUNT = cpu_count()//2
+SUBTYPE = 'PCM_16'
 FFT_SIZE = 2**16
 HOP_LENGTH = FFT_SIZE//4
 
@@ -110,12 +98,7 @@ EQ_PARAMETERS.add(Parameter('low_shelf_gain', eq_gain, 'float', minimum=eq_gain,
 EQ_PARAMETERS.add(Parameter('low_shelf_freq', 600.0, 'float', minimum=500.0, maximum=700.0))
 EQ_PARAMETERS.add(Parameter('high_shelf_gain', eq_gain, 'float', minimum=eq_gain, maximum=eq_gain))
 EQ_PARAMETERS.add(Parameter('high_shelf_freq', 8500.0, 'float', minimum=7000.0, maximum=10000.0))
-EQ_PARAMETERS.add(Parameter('first_band_gain', eq_gain, 'float', minimum=eq_gain, maximum=eq_gain)) #first_band only applies to drums.
-EQ_PARAMETERS.add(Parameter('first_band_freq', 100.0, 'float', minimum=100.0, maximum=100.0))
-EQ_PARAMETERS.add(Parameter('first_band_q', 0.7, 'float', minimum=0.7, maximum=0.7))
-
 EQ_BANDS_VOCALS_OTHER = ['low_shelf', 'high_shelf']
-EQ_BANDS_DRUMS = ['low_shelf', 'first_band', 'high_shelf']
 
 # PRE-REVERB (FOR REAL DRY INPUT)
 PRE_REVERB_PARAMETERS = ParameterList()
@@ -129,7 +112,7 @@ PRE_REVERB_PROBABILITY = 1.0
 PRE_FX_PARALLEL = False
 PRE_FX_SHUFFLE = False
 
-# RV1 Conv Reverb
+# REVERB AUGMENTATION 
 REVERB_PARAMETERS = ParameterList()
 REVERB_PARAMETERS.add(Parameter('wet', 1.0, 'float', minimum=1.0, maximum=1.0))
 REVERB_PARAMETERS.add(Parameter('dry', 0.0, 'float', minimum=0.0, maximum=0.0))
@@ -369,55 +352,55 @@ def normalize_audio_path(args_):
                     
                 elif effect == 'reverb':
                     
-                    if src == 'drums':
-                        bands = EQ_BANDS_DRUMS
+                    if src in ['bass', 'drums']: 
+                        pass
                     else:
                         bands = EQ_BANDS_VOCALS_OTHER
-                    
-                    audio_reverb_send = get_reverb_send(output_audio, EQ_PARAMETERS, REVERB_PARAMETERS, IR,
-                                                        bands=bands,
-                                                        eq_prob=EQ_PROBABILITY, rv_prob=REVERB_PROBABILITY,
-                                                        parallel=FX_PARALLEL,
-                                                        shuffle=FX_SHUFFLE,
-                                                        sr=SR)
 
-                    
-                    np.copyto(output_audio, audio_reverb_send)
+                        audio_reverb_send = get_reverb_send(output_audio, EQ_PARAMETERS, REVERB_PARAMETERS, IR,
+                                                            bands=bands,
+                                                            eq_prob=EQ_PROBABILITY, rv_prob=REVERB_PROBABILITY,
+                                                            parallel=FX_PARALLEL,
+                                                            shuffle=FX_SHUFFLE,
+                                                            sr=SR)
+
+
+                        np.copyto(output_audio, audio_reverb_send)
                     
                 elif effect == 'prereverb':
                     
-                    if src == 'drums':
-                        bands = EQ_BANDS_DRUMS
+                    if src in ['bass', 'drums']: 
+                        pass
                     else:
                         bands = EQ_BANDS_VOCALS_OTHER
                     
-                    audio_reverb_send = get_reverb_send(output_audio, EQ_PARAMETERS, PRE_REVERB_PARAMETERS, PRE_IR,
-                                                        bands=bands,
-                                                        eq_prob=PRE_EQ_PROBABILITY, rv_prob=PRE_REVERB_PROBABILITY,
-                                                        parallel=PRE_FX_PARALLEL,
-                                                        shuffle=PRE_FX_SHUFFLE,
-                                                        sr=SR)
+                        audio_reverb_send = get_reverb_send(output_audio, EQ_PARAMETERS, PRE_REVERB_PARAMETERS, PRE_IR,
+                                                            bands=bands,
+                                                            eq_prob=PRE_EQ_PROBABILITY, rv_prob=PRE_REVERB_PROBABILITY,
+                                                            parallel=PRE_FX_PARALLEL,
+                                                            shuffle=PRE_FX_SHUFFLE,
+                                                            sr=SR)
 
-                    
-                    np.copyto(output_audio, audio_reverb_send)
-            
+
+                        np.copyto(output_audio, audio_reverb_send)
+
             output_audio = output_audio[FFT_SIZE:FFT_SIZE+audio.shape[0]]
-            
+
         else:
-            
+
             print('PREVIOUS STEM IS ONLY ZEROS')
-            
+
             mix_path = path.split(PATH_DATASET)[-1].split(source_str+'.wav')[0]
             mix_path = PATH_DATASET + mix_path
             mix_path = os.path.join(PATH_DATASET, mix_path + 'mixture.wav')
-            
+
             fs_, audio_ = load_wav(mix_path)
             assert(fs == SR)
             conversion_scale = 1. / (1. + np.iinfo(audio_.dtype).max)
             audio_ = audio_.astype(dtype=np.float32) * conversion_scale
-            
+
             output_audio = np.zeros_like(audio_)     
-            
+
         path = os.path.join(os.path.dirname(path), src)
         output_path = path.split(PATH_DATASET)[-1].split('.wav')[0]
         output_path = PATH_DATASET + output_path
@@ -431,99 +414,164 @@ def normalize_audio_path(args_):
             tt = '{:.2f}'.format(tt)
             print(f'--- Finishing {effect} in {tt} hours ---')
 
-audio_path_, audio_path_dict = get_audio_paths(PATH_DATASET, STEMS)
+            
+            
+            
+if __name__ == '__main__':
 
+    parser = argparse.ArgumentParser(description='Evaluation parser')
 
-print(f'--- Processing {len(audio_path_)} --- total files')
-for p in audio_path_dict:
-    print(f'--- Processing {len(audio_path_dict[p])} --- {p} files')
-
-stems_names_ = []
-for i,j in enumerate(STEMS):
-    stems_names_.append(j+'_'+FILE_NAME)
+    parser.add_argument('--input-folder', help='Path to dataset folder', type=str,
+                        required=True)
     
-if LOAD_MEAN:
-    
-    features_mean = np.load(os.path.join(PATH_FEATURES, NAME_FEATURES+'.npy'), allow_pickle='TRUE')[()]
-    features_mean = smooth_feature(features_mean)
+    parser.add_argument('--impulse-responses', type=str,
+                        default=None, help='Path to folder with impulse responses')
 
-else:
+    parser.add_argument('--output-suffix', type=str,
+                        help='Name suffix to add to the output file name',
+                        required=True)
     
-    features_dict = {}
-    features_mean = {}
+    parser.add_argument('--features-load', type=str,
+                        help='File to load effect normalization features',
+                        default=None)
+    
+    parser.add_argument('--features-save', type=str,
+                        help='File to save effect normalization features',
+                        default=None)
+    
+    parser.add_argument('--normalize', type=bool,
+                        help='Boolean flag for normalization. if True audio is normalized. If False only features are calculated.',
+                        default=True)
+    
+    start_time = time.time()
+
+    args = parser.parse_args()
+    
+    PATH_DATASET = args.input_folder # Folder that contains dataset to be normalized
+    FILE_NAME = args.output_suffix # Prefix to name normalized audio
+    FEATURES_LOAD = args.features_load # Name of feature file to be loaded 
+    FEATURES_SAVE = args.features_save # Name of feature file to be saved 
+    
+    if FEATURES_LOAD:
+        LOAD_MEAN = True # If True average features are loaded. If false, features are calculated and feature file is saved
+    elif FEATURES_SAVE:
+        LOAD_MEAN = False
+    else:
+        raise ValueError(f'file to load features or file to save features should be provided')
+
+    NORM_AUDIO = args.normalize # If True audio is normalized. If false only features calculated.
+    
+#     PATH_DATASET = '/data/martinez/audio/automix/TencyDB/train' # Folder that contains dataset to be normalized
+#     PATH_FEATURES = '/data/martinez/audio/automix/TencyDB_features++' # Folder that contains average features files
+#     FILE_NAME = 'rv1v0off_eq_comp_noexp_pan_frames_vol' # Prefix to name normalized audio
+#     NAME_FEATURES = 'features_mean_v3' # Name of feature file to be loaded or to be created
+    
+    
+    ir_path = {} 
+    ir_path['reverb'] = args.impulse_responses
+    
+    # Conv Reverb
+    if ir_path['reverb']:
+        IR = []
+        IR.extend(create_dataset(path=ir_path['reverb'],
+                                                accepted_sampling_rates=[SR],
+                                                sources=['impulse_response'],
+                                                mapped_sources={}, load_to_memory=True, debug=False)[0])
+        REVERB_PARAMETERS.add(Parameter('index', 0, 'int', minimum=0, maximum=len(IR)))
+    else:
+        EFFECTS.remove('reverb')
+            
+            
+    audio_path_, audio_path_dict = get_audio_paths(PATH_DATASET, STEMS)
+
+
+    print(f'--- Processing {len(audio_path_)} --- total files')
+    for p in audio_path_dict:
+        print(f'--- Processing {len(audio_path_dict[p])} --- {p} files')
+
+    stems_names_ = []
+    for i,j in enumerate(STEMS):
+        stems_names_.append(j+'_'+FILE_NAME)
+
+    if LOAD_MEAN:
+
+        features_mean = np.load(FEATURES_LOAD, allow_pickle='TRUE')[()]
+        features_mean = smooth_feature(features_mean)
+
+    else:
+
+        features_dict = {}
+        features_mean = {}
+        for effect in EFFECTS:
+            features_dict[effect] = {key:[] for key in STEMS}
+            features_mean[effect] = {key:[] for key in STEMS}        
+
+    stems_names = STEMS.copy()        
     for effect in EFFECTS:
-        features_dict[effect] = {key:[] for key in STEMS}
-        features_mean[effect] = {key:[] for key in STEMS}        
+        print(f'{effect} ...')
+        j=0
+        for key in STEMS:
+            print(f'{key} ...')
+            i = []
+            for i_, p_ in enumerate(audio_path_dict[key]):
+                i.append(i_)  
+            i = np.asarray(i) + j
+            j += len(i)
 
-stems_names = STEMS.copy()        
-for effect in EFFECTS:
-    print(f'{effect} ...')
-    j=0
-    for key in STEMS:
-        print(f'{key} ...')
-        i = []
-        for i_, p_ in enumerate(audio_path_dict[key]):
-            i.append(i_)  
-        i = np.asarray(i) + j
-        j += len(i)
+            _func_args = list(zip(audio_path_dict[key], i, [effect]*len(i)))
 
-        _func_args = list(zip(audio_path_dict[key], i, [effect]*len(i)))
-        
-        if LOAD_MEAN is False:
-            
-            pool = Pool(CPU_COUNT)
-            features = pool.map(get_norm_feature, _func_args)
-            features_= []
-            for j,i in enumerate(features):
+            if LOAD_MEAN is False:
 
-                if i is not None:
-                    features_.append(i)
-            
-            features_dict[effect][key] = features_
-            
-            print(effect, key, len(features_dict[effect][key]))
-            s = np.asarray(features_dict[effect][key])
-            s = np.mean(s, axis=0)
-            features_mean[effect][key] = s
-            
-            if effect == 'eq':
-                assert len(s)==1+FFT_SIZE//2, len(s)
-            elif effect == 'compression':
-                assert len(s)==2, len(s)
-            elif effect == 'panning':
-                assert len(s)==1+FFT_SIZE//2, len(s)
-            elif effect == 'loudness':
-                assert len(s)==1, len(s)
-            
-            
-            if effect == 'eq':
-                if key in ['other', 'vocals']:
-                    f = 401
-                else:
-                    f = 151
-                features_mean[effect][key] = scipy.signal.savgol_filter(features_mean[effect][key],
-                                                                        f, 1, mode='mirror')
-            elif effect == 'panning':
-                features_mean[effect][key] = scipy.signal.savgol_filter(features_mean[effect][key],
-                                                                        501, 1, mode='mirror')
-                
-        if NORM_AUDIO:        
-            pool = Pool(CPU_COUNT)
-            pool.map(normalize_audio_path, _func_args)
-        
-    stems_names = stems_names_
-    audio_path_, audio_path_dict = get_audio_paths(PATH_DATASET, stems_names)
+                pool = Pool(CPU_COUNT)
+                features = pool.map(get_norm_feature, _func_args)
+                features_= []
+                for j,i in enumerate(features):
+
+                    if i is not None:
+                        features_.append(i)
+
+                features_dict[effect][key] = features_
+
+                print(effect, key, len(features_dict[effect][key]))
+                s = np.asarray(features_dict[effect][key])
+                s = np.mean(s, axis=0)
+                features_mean[effect][key] = s
+
+                if effect == 'eq':
+                    assert len(s)==1+FFT_SIZE//2, len(s)
+                elif effect == 'compression':
+                    assert len(s)==2, len(s)
+                elif effect == 'panning':
+                    assert len(s)==1+FFT_SIZE//2, len(s)
+                elif effect == 'loudness':
+                    assert len(s)==1, len(s)
 
 
-# print(features_mean['loudness'])
-# print(features_mean['compression'])
+                if effect == 'eq':
+                    if key in ['other', 'vocals']:
+                        f = 401
+                    else:
+                        f = 151
+                    features_mean[effect][key] = scipy.signal.savgol_filter(features_mean[effect][key],
+                                                                            f, 1, mode='mirror')
+                elif effect == 'panning':
+                    features_mean[effect][key] = scipy.signal.savgol_filter(features_mean[effect][key],
+                                                                            501, 1, mode='mirror')
 
-if LOAD_MEAN is False:
-    np.save(os.path.join(PATH_FEATURES, NAME_FEATURES), features_mean)
+            if NORM_AUDIO:        
+                pool = Pool(CPU_COUNT)
+                pool.map(normalize_audio_path, _func_args)
 
-t = (time.time() - start_time_total)/3600
-t = '{:.2f}'.format(t)
-print(f'--- FINISHED - It took {t} hours ---')
+        stems_names = stems_names_
+        audio_path_, audio_path_dict = get_audio_paths(PATH_DATASET, stems_names)
 
 
-            
+    if LOAD_MEAN is False:
+        np.save(FEATURES_SAVE, features_mean)
+
+    t = (time.time() - start_time_total)/3600
+    t = '{:.2f}'.format(t)
+    print(f'--- FINISHED - It took {t} hours ---')
+
+
+
