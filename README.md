@@ -19,6 +19,7 @@ For technical details of the work, please see:
 >}<br />
 
 Main Project Page: https://marco-martinez-sony.github.io/FxNorm-automix/
+
 ArXiv Paper: https://arxiv.org/abs/2208.11428
 
 ## Installation
@@ -37,14 +38,14 @@ The following scripts train FxNorm-Automix (Ours) and Wave-U-Net (WUN) models
 
 ### Pre-train FXNorm-automix
 
-```
+    ```
   bash scripts/pretrain_fxnorm_automix.sh
 ```
 
 ### FXNorm-automix
 
 
-   ```
+    ```
   bash scripts/train_fxnorm_automix.sh
 ```
 
@@ -52,7 +53,7 @@ The following scripts train FxNorm-Automix (Ours) and Wave-U-Net (WUN) models
 ### WAVE-U-Net
 
 
-   ```
+    ```
   bash scripts/train_wun.sh
 ```
 
@@ -62,7 +63,7 @@ The following scripts train FxNorm-Automix (Ours) and Wave-U-Net (WUN) models
 
 This script evaluates a trained model on a given test dataset; mixes and metrics are computed
 
-   ```
+    ```
   bash scripts/evaluate.sh
 ```
 
@@ -70,6 +71,7 @@ This script evaluates a trained model on a given test dataset; mixes and metrics
 ## Inference 
 
 This script runs inference on a given multitrack 
+
     ```
   bash scripts/inference.sh
 ```
