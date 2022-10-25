@@ -10,14 +10,15 @@ For technical details of the work, please see:
 [Marco A. Martínez-Ramírez](https://m-marco.com/about/), [Wei-Hsiang Liao](https://jp.linkedin.com/in/wei-hsiang-liao-66283154), [Giorgio Fabbro](https://twitter.com/GioFabbro), [Stefan Uhlich](https://scholar.google.de/citations?user=hja8ejYAAAAJ&hl=de), [Chihiro Nagashima](https://jp.linkedin.com/in/chihiro-nagashima-9473271aa), and [Yuki Mitsufuji](https://www.yukimitsufuji.com/). <br />
 23rd International Society for Music Information Retrieval Conference (ISMIR), December, 2022.
 
->@inproceedings{martinez2022FxNormAutomix,<br />
->   title={Automatic music mixing with deep learning and out-of-domain data},<br />
->   author={Mart\'{i}nez-Ram\'{i}rez, Marco A. and Liao, Wei-Hsiang and Fabbro, Giorgio and Uhlich, Stefan and Nagashima, Chihiro and Mitsufuji, Yuki},<br />
->   booktitle={23rd International Society for Music Information Retrieval Conference (ISMIR)},<br />
->   month={December},<br />
->   year={2022}<br />
->}<br />
-
+```
+@inproceedings{martinez2022FxNormAutomix,
+   title={Automatic music mixing with deep learning and out-of-domain data},
+   author={Mart\'{i}nez-Ram\'{i}rez, Marco A. and Liao, Wei-Hsiang and Fabbro, Giorgio and Uhlich, Stefan and Nagashima, Chihiro and Mitsufuji, Yuki},
+   booktitle={23rd International Society for Music Information Retrieval Conference (ISMIR)},<br />
+   month={December},
+   year={2022}
+}
+```
 Main Project Page: https://marco-martinez-sony.github.io/FxNorm-automix/
 
 ArXiv Paper: https://arxiv.org/abs/2208.11428
@@ -38,14 +39,14 @@ The following scripts train FxNorm-Automix (Ours) and Wave-U-Net (WUN) models
 
 ### Pre-train FXNorm-automix
 
-    ```
+```
   bash scripts/pretrain_fxnorm_automix.sh
 ```
 
 ### FXNorm-automix
 
 
-    ```
+```
   bash scripts/train_fxnorm_automix.sh
 ```
 
@@ -53,7 +54,7 @@ The following scripts train FxNorm-Automix (Ours) and Wave-U-Net (WUN) models
 ### WAVE-U-Net
 
 
-    ```
+```
   bash scripts/train_wun.sh
 ```
 
@@ -63,7 +64,7 @@ The following scripts train FxNorm-Automix (Ours) and Wave-U-Net (WUN) models
 
 This script evaluates a trained model on a given test dataset; mixes and metrics are computed
 
-    ```
+```
   bash scripts/evaluate.sh
 ```
 
@@ -72,7 +73,7 @@ This script evaluates a trained model on a given test dataset; mixes and metrics
 
 This script runs inference on a given multitrack 
 
-    ```
+```
   bash scripts/inference.sh
 ```
                           
@@ -88,11 +89,11 @@ The average features computed on MUSDB18 can be found at `training/features/feat
 
 ## Data preprocessing
 
-  ```
+```
   automix/data_normalization.py
 ```                    
 
-```
+
 ## Requirements
 
 * librosa>=0.8.1
