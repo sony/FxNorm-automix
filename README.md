@@ -44,13 +44,13 @@ This script computes the average features for the training dataset, then normali
 
 The following scripts train FxNorm-Automix (Ours) and Wave-U-Net (WUN) models. Check `config.py` files at `configs/ISMIR` for hyperparameters and dataset settings
 
-### Pre-train FXNorm-automix
+### Pre-train FxNorm-automix
 
 ```
   bash scripts/pretrain_fxnorm_automix.sh
 ```
 
-### FXNorm-automix
+### FxNorm-automix
 
 
 ```
