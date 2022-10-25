@@ -2,14 +2,38 @@
 
 Music mixing traditionally involves recording instruments in the form of clean, individual tracks and blending them into a final mixture using audio effects and expert knowledge (e.g., a mixing engineer). The automation of music production tasks has become an emerging field in recent years, where rule-based methods and machine learning approaches have been explored. Nevertheless, the lack of dry or clean instrument recordings limits the performance of such models, which is still far from professional human-made mixes. We explore whether we can use out-of-domain data such as wet or processed multitrack music recordings and repurpose it to train supervised deep learning models that can bridge the current gap in automatic mixing quality. To achieve this we propose a novel data preprocessing method that allows the models to perform automatic music mixing. We also redesigned a listening test method for evaluating music mixing systems. We validate our results through such subjective tests using highly experienced mixing engineers as participants.
 
+## Paper
+
+For technical details of the work, please see:
+
+"[Automatic music mixing with deep learning and out-of-domain data.](https://arxiv.org/abs/2208.11428)"
+[Marco A. Martínez-Ramírez](https://m-marco.com/about/), [Wei-Hsiang Liao](https://jp.linkedin.com/in/wei-hsiang-liao-66283154), [Giorgio Fabbro](https://twitter.com/GioFabbro), [Stefan Uhlich](https://scholar.google.de/citations?user=hja8ejYAAAAJ&hl=de), [Chihiro Nagashima](https://jp.linkedin.com/in/chihiro-nagashima-9473271aa), and [Yuki Mitsufuji](https://www.yukimitsufuji.com/). <br />
+23rd International Society for Music Information Retrieval Conference (ISMIR), December, 2022.
+
+>@inproceedings{martinez2022FxNormAutomix,<br />
+>   title={Automatic music mixing with deep learning and out-of-domain data},<br />
+>   author={Mart\'{i}nez-Ram\'{i}rez, Marco A. and Liao, Wei-Hsiang and Fabbro, Giorgio and Uhlich, Stefan and Nagashima, Chihiro and Mitsufuji, Yuki},<br />
+>   booktitle={23rd International Society for Music Information Retrieval Conference (ISMIR)},<br />
+>   month={December},<br />
+>   year={2022}<br />
+>}<br />
+
+Main Project Page: https://marco-martinez-sony.github.io/FxNorm-automix/
+ArXiv Paper: https://arxiv.org/abs/2208.11428
+
 ## Installation
 
-`python setup.py install`
-`pip install -r requirements.txt`
+```
+  python setup.py install
+```
+```
+  pip install -r requirements.txt
+```
+
 
 ## Training models
 
-
+The following scripts train FxNorm-Automix (Ours) and Wave-U-Net (WUN) models
 
 ### Pre-train FXNorm-automix
 
@@ -24,9 +48,6 @@ Music mixing traditionally involves recording instruments in the form of clean, 
   bash scripts/train_fxnorm_automix.sh
 ```
 
-   ```
-  bash scripts/train_fxnorm_automix.sh
-```
 
 ### WAVE-U-Net
 
@@ -39,39 +60,35 @@ Music mixing traditionally involves recording instruments in the form of clean, 
 
 ## Evaluate models
 
+This script evaluates a trained model on a given test dataset; mixes and metrics are computed
 
    ```
   bash scripts/evaluate.sh
 ```
 
-## Models
 
-TDCNFx -> Ours:
+## Inference 
 
-  ```
-  automix/common_networkbuilding_cafx_tdcn_lstm_mix.py
+This script runs inference on a given multitrack 
+    ```
+  bash scripts/inference.sh
 ```
+                          
+## Trained Models
 
-WAVE-U-NET:
+Trained models can be found at `training/results` and their `config.py` files at `configs/ISMIR`
 
-  ```
-  automix/common_networkbuilding_waveunet.py
-```
+The available models are *ours_S_La*, *ours_S_Lb*, *ours_S(pretrained)*, and *wun_S_Lb*
+
+## Computed features
+
+The average features computed on MUSDB18 can be found at `training/features/features_MUSDB18.npy`
 
 ## Data preprocessing
 
   ```
   automix/data_normalization.py
-```
-
-## Inference 
-
-
-    ```
-  bash scripts/inference.sh
-```
-                                
-                    
+```                    
 
 ```
 ## Requirements
@@ -89,5 +106,5 @@ WAVE-U-NET:
 * setuptools==59.5.0
 * torch==1.9.0
 
-Please see [requirements.txt](http://link/to/requirements.txt)
+Please see [requirements.txt](https://github.com/sony/FxNorm-automix/blob/main/requirements.txt)
 
