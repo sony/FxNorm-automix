@@ -86,7 +86,7 @@ config['SHUFFLE_CHANNELS'] = True
 """ SETTINGS RELATED TO NETWORK """
 
 # Import network definition file
-from automix.common_networkbuilding_FxNorm_Automix import Net, compute_receptive_field  # noqa E402, F401
+from automix.common_networkbuilding_cafx_tdcn_lstm_mix import Net, compute_receptive_field  # noqa E402, F401
 
 # THIS PARAMETER MAY BE USELESS HERE, BUT REQUIRED IN train.py FOR NOW
 config['NET_TYPE'] = 'CAFX_TDCN'

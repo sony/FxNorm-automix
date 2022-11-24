@@ -41,6 +41,10 @@ import time
 
 EFFECTS = ['prereverb', 'reverb', 'eq', 'compression', 'panning', 'loudness']
 
+# Max length input samples in seconds (For GPU memory limitations)
+MAX_LENGTH = (4 * 60)
+
+
 # Compute datapreprocessing, False if stems have already been preprocessed
 COMPUTE_NORMALIZATION = True
 
@@ -504,7 +508,8 @@ if __name__ == '__main__':
         
     data_func = functools.partial(generate_data, file_path_or_data=audio)    
         
-    max_samples = max(samples)
+#     max_samples = max(samples)
+    max_samples = min(max(samples), int(MAX_LENGTH*SR))
     max_samplingrate = max(samplingrate)
     max_subtype = max(subtype)
     data = np.zeros((len(STEMS), 1,

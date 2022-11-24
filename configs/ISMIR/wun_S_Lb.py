@@ -116,7 +116,7 @@ config['RES'] = 'fixed'
 config['DEPTH'] = 1
 
 
-from automix.common_networkbuilding_FxNorm_Automix import compute_receptive_field
+from automix.common_networkbuilding_cafx_tdcn_lstm_mix import compute_receptive_field
 
 # Set how many samples we should discard in model output datatype
 # to avoid boundary effects - e.g., due to receptive field of network
