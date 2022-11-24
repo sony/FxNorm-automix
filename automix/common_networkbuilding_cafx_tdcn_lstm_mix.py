@@ -1,7 +1,9 @@
 """
-Define the structure of the proposed network
+Define the structure of the proposed network "FxNorm Automix"
 
-OURS = CAFX + ConvTasNet + BLSTM
+FxNorm Automix = CAFX + ConvTasNet + BLSTM
+CAFx => https://www.mdpi.com/2076-3417/10/2/638
+ConvTasNet => https://arxiv.org/abs/1809.07454
 
 AI Music Technology Group, Sony Group Corporation
 AI Speech and Sound Group, Sony Europe
