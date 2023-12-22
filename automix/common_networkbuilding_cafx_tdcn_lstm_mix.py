@@ -369,8 +369,7 @@ class Net(SeparationNet):
         
         # ----- Synthesis back-end ----- #
 
-        self.maxunpool1d = nn.MaxUnpool1d(self.maxpoolsize) if self.pretrain else nn.Upsample(scale_factor=
-                                                                                             self.maxpoolsize)
+        self.maxunpool1d = nn.MaxUnpool1d(self.maxpoolsize)
         
         self.se_block = SqueezeExcitation(n_channels=N_FEATURES_ENCODER, amplifying_ratio=self.se_amp_ratio) 
         
@@ -478,7 +477,7 @@ class Net(SeparationNet):
         
             masking = masking.transpose(1,2)
 
-            masking = self.maxunpool1d(x)
+            masking = nn.functional.interpolate(masking, scale_factor=self.maxpoolsize)
             
         else:
             masking = self.maxunpool1d(x, pool_indices)

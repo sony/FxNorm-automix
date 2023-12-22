@@ -629,8 +629,8 @@ if __name__ == '__main__':
                 out_t = out_t[:-np.abs(out_t.shape[0]-tar_t.shape[0]), :]
                 assert tar_t.shape == out_t.shape
 
-                mixture_targets[DataType.TIME_SAMPLES].append(tar_t)
-                mixture_outputs[DataType.TIME_SAMPLES].append(out_t)        
+                mixture_targets[DataType.TIME_SAMPLES].append(tar_t.astype(np.float64))
+                mixture_outputs[DataType.TIME_SAMPLES].append(out_t.astype(np.float64))        
 
                 audio_output_save = config['OUTPUTS']
 

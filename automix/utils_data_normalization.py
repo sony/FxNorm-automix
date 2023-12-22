@@ -589,6 +589,7 @@ def compute_spectral_features(args_):
                                     'contrast_m_mean',
 #                                     'contrast_m_std',
                                     'contrast_h_mean',
+                                    'contrast_mean',
 #                                     'contrast_h_std',
                                     'rolloff_mean',
 #                                     'rolloff_std',
@@ -654,6 +655,13 @@ def compute_spectral_features(args_):
         out_ft = librosa.feature.spectral_flatness(y=None, S=out,
                                                    n_fft=fft_size, hop_length=hop_length, 
                                                    amin=1e-10, power=2.0)
+        
+        # Flatness is usually computed in dB
+        tar_ft = amp_to_db(tar_ft)
+        out_ft = amp_to_db(out_ft)
+        # projection to avoid mape errors
+        tar_ft = (-1*tar_ft) + 1.0
+        out_ft = (-1*out_ft) + 1.0
 
         
 #         print(idx, 'sc', np.max(tar_sc), np.min(tar_sc))
@@ -699,8 +707,8 @@ def compute_spectral_features(args_):
         assert np.isnan(mean_ro_out).any() == False, f'NAN values out mean ro {idx}'
 #         assert np.isnan(std_ro_out).any() == False, f'NAN values out std ro {idx}'
         
-        mean_ft_tar, std_ft_tar = get_running_stats(tar_ft.T, [0], N=800) # gives very high numbers due to N (80) value
-        mean_ft_out, std_ft_out = get_running_stats(out_ft.T, [0], N=800)
+        mean_ft_tar, std_ft_tar = get_running_stats(tar_ft.T, [0], N=N) 
+        mean_ft_out, std_ft_out = get_running_stats(out_ft.T, [0], N=N)
         
         mape_mean_sc = sklearn.metrics.mean_absolute_percentage_error(mean_sc_tar[0], mean_sc_out[0])
 #         mape_std_sc = sklearn.metrics.mean_absolute_percentage_error(std_sc_tar[0], std_sc_out[0])
@@ -754,6 +762,10 @@ def compute_spectral_features(args_):
     spectral_['contrast_h_mean'].append(np.mean(contrast_h_mean_))
 #     spectral_['contrast_h_std'].append(np.mean(contrast_h_std_))
     
+    spectral_['contrast_mean'] = np.mean([spectral_['contrast_l_mean'], 
+                                     spectral_['contrast_m_mean'], 
+                                     spectral_['contrast_h_mean']])
+    
     spectral_['rolloff_mean'].append(np.mean(rolloff_mean_))
 #     spectral_['rolloff_std'].append(np.mean(rolloff_std_))
     
@@ -761,9 +773,7 @@ def compute_spectral_features(args_):
     
     spectral_['mape_mean'].append(np.mean([np.mean(centroid_mean_),
                                       np.mean(bandwidth_mean_),
-                                      np.mean(contrast_l_mean_),
-                                      np.mean(contrast_m_mean_),
-                                      np.mean(contrast_h_mean_),
+                                      spectral_['contrast_mean'],
                                       np.mean(rolloff_mean_),
                                       np.mean(flatness_mean_),
                                      ]))
