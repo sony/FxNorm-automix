@@ -17,7 +17,10 @@ config = {}
 config['DEBUG'] = False
 config['CALCULATE_STATISTICS'] = True
 
-config['OUTPUTS'] = ['mixture']
+config['OUTPUTS'] = ['vocals_normalized',
+                    'bass_normalized',
+                    'drums_normalized', 
+                    'other_normalized']
 
 config['INPUTS'] = ['vocals_normalized',
                     'bass_normalized',
